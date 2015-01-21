@@ -1,0 +1,9 @@
+{
+  "name": "javascript-framework",
+  "version": "0.0.1",
+  "homepage": "https://github.com/sustainableis/javascript-framework",
+  "dependencies": {
+    "angular": "latest",
+    "underscore": "~1.7.0"
+  }
+}
