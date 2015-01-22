@@ -1,6 +1,7 @@
 {
-  "name": "javascript-framework",
+  "name": "sis-framework",
   "version": "0.0.1",
+  "main": "dist/sis-framework.js",
   "homepage": "https://github.com/sustainableis/javascript-framework",
   "dependencies": {
     "angular": "latest",
