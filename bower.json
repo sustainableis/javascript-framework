@@ -2,7 +2,14 @@
   "name": "sis-framework",
   "version": "0.0.1",
   "main": "dist/sis-framework.js",
+  "private": true,
   "homepage": "https://github.com/sustainableis/javascript-framework",
+  "description": "SIS Framework",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
   "dependencies": {
     "angular": "latest",
     "underscore": "~1.7.0"
