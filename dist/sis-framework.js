@@ -429,7 +429,7 @@
         '$resource',
         'url',
         function($resource, url) {
-            return $resource(url + '/oauth/:controller', {
+            return $resource(url + 'oauth/:controller', {
                 controller: '@_controller'
             },
             {});
