@@ -430,9 +430,15 @@
         'url',
         function($resource, url) {
             return $resource(url + 'oauth/:controller', {
-                controller: '@_controller'
-            },
-            {});
+                controller: '@controller'
+            }, {
+                post: {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }
+            });
         }
     ]);
 
