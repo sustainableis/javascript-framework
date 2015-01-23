@@ -250,6 +250,10 @@
                 request: function(config) {
                     config.headers = config.headers || {};
 
+                    if (config.data && typeof config.data === 'object') {
+                        config.data = $.param(config.data);
+                    }
+
                     if (sisConfiguration.token) {
                         config.headers.Authorization = 'Bearer ' + sisConfiguration.token;
                     }
@@ -275,7 +279,9 @@
         '$logProvider',
         'sisConfigurationProvider',
         function ($httpProvider, $logProvider, sisConfigurationProvider) {
-            
+            $httpProvider.defaults.headers.post['Content-Type'] = 
+                'application/x-www-form-urlencoded; charset=UTF-8;';
+
             // $httpProvider.defaults.useXDomain = true;
             // delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
