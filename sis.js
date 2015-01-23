@@ -12,7 +12,7 @@
 
     angular.module('sis.api').constant('url', 'http://api.sustainableis.com/');
     angular.module('sis.api').constant('version', 'v1');
-    angular.module('sis.modules').constant('path', 'http://0.0.0.0:8000/**');
+    angular.module('sis.modules').constant('path', 'http://d10t57k8pf74ki.cloudfront.net/**');
 
     /**
      * Provider for managing API calls
