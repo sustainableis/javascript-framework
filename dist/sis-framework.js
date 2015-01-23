@@ -326,6 +326,10 @@
                 {
                     id: 2,
                     tag: 'dropdown-module-angular'
+                },
+                {
+                    id: 3,
+                    tag: 'table-module'
                 }
             ];
 
@@ -340,7 +344,7 @@
                 },
                 {
                     id: 2,
-                    module_id: 2,
+                    module_id: 1,
                     refresh: 10,
                     stale: 60,
                     name: 'Outputs for Facility',
@@ -348,10 +352,19 @@
                 },
                 {
                     id: 3,
-                    module_id: 3,
+                    module_id: 2,
                     refresh: 10,
                     stale: 60,
                     name: 'Select Facility'
+                },
+                {
+                    id: 4,
+                    module_id: 3,
+                    refresh: 10,
+                    stale: 60,
+                    name: 'Polymer table module',
+                    headers: JSON.stringify(['Id', 'Created At', 'description', 'Key'])
+
                 }
             ];
 
@@ -370,27 +383,39 @@
                 },
                 {
                     id: 3,
-                    module_id: 2,
+                    module_id: 1,
                     route: 'data',
                     topic: 'service:facilities/id:1/controller:outputs'
                 },
                 {
                     id: 4,
-                    module_id: 2,
+                    module_id: 1,
                     route: 'configuration',
                     topic: 'service:modules/id:2/controller:configuration'
                 },
                 {
                     id: 5,
-                    module_id: 3,
+                    module_id: 2,
                     route: 'data',
                     topic: 'service:facilities'
                 },
                 {
                     id: 6,
-                    module_id: 3,
+                    module_id: 2,
                     route: 'configuration',
                     topic: 'service:modules/id:3/controller:configuration'
+                },
+                {
+                    id: 7,
+                    module_id: 3,
+                    route: 'data',
+                    topic: 'service:facilities/id:1/controller:feeds'
+                },
+                {
+                    id: 8,
+                    module_id: 3,
+                    route: 'configuration',
+                    topic: 'service:modules/id:1/controller:configuration'
                 }
             ];
 
