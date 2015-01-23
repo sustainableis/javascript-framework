@@ -275,6 +275,7 @@
         '$logProvider',
         'sisConfigurationProvider',
         function ($httpProvider, $logProvider, sisConfigurationProvider) {
+            
             // $httpProvider.defaults.useXDomain = true;
             // delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
@@ -431,13 +432,6 @@
         function($resource, url) {
             return $resource(url + 'oauth/:controller', {
                 controller: '@controller'
-            }, {
-                post: {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                }
             });
         }
     ]);
@@ -465,12 +459,11 @@
         'version',
         function($resource, url, version) {
             return $resource(url + version + '/facilities/:id/:controller/:verb/:action', {
-                id: '@_id',
-                controller: '@_controller',
-                verb: '@_verb',
-                action: '@_action'
-            },
-            {});
+                id: '@id',
+                controller: '@controller',
+                verb: '@verb',
+                action: '@action'
+            });
         }
     ]);
 
@@ -493,11 +486,10 @@
         'version',
         function($resource, url, version) {
             return $resource(url + version + '/organizations/:id/:controller/:verb', {
-                id: '@_id',
-                controller: '@_controller',
-                verb: '@_verb'
-            },
-            {});
+                id: '@id',
+                controller: '@controller',
+                verb: '@verb'
+            });
         }
     ]);
 
@@ -521,11 +513,10 @@
         'version',
         function($resource, url, version) {
             return $resource(url + version + '/buildings/:id/:controller/:verb', {
-                id: '@_id',
-                controller: '@_controller',
-                verb: '@_verb'
-            },
-            {});
+                id: '@id',
+                controller: '@controller',
+                verb: '@verb'
+            });
         }
     ]);
 
@@ -550,11 +541,10 @@
         'version',
         function($resource, url, version) {
             return $resource(url + version + '/feeds/:id/:controller/:verb', {
-                id: '@_id',
-                controller: '@_controller',
-                verb: '@_verb'
-            },
-            {});
+                id: '@id',
+                controller: '@controller',
+                verb: '@verb'
+            });
         }
     ]);
 
@@ -578,11 +568,10 @@
         'version',
         function($resource, url, version) {
             return $resource(url + version + '/outputs/:id/:controller/:verb', {
-                id: '@_id',
-                controller: '@_controller',
-                verb: '@_verb'
-            },
-            {});
+                id: '@id',
+                controller: '@controller',
+                verb: '@verb'
+            });
         }
     ]);
 
@@ -605,11 +594,10 @@
         'version',
         function($resource, url, version) {
             return $resource(url + version + '/users/:id/:controller/:verb', {
-                id: '@_id',
-                controller: '@_controller',
-                verb: '@_verb'
-            },
-            {});
+                id: '@id',
+                controller: '@controller',
+                verb: '@verb'
+            });
         }
     ]);
 
@@ -632,11 +620,10 @@
         'version',
         function($resource, url, version) {
             return $resource(url + version + '/weather/:controller/:id/:verb', {
-                id: '@_id',
-                controller: '@_controller',
-                verb: '@_verb'
-            },
-            {});
+                id: '@id',
+                controller: '@controller',
+                verb: '@verb'
+            });
         }
     ]);
 // TODO: Inject underscore.js and jQuery as dependencies or remove references to them
