@@ -2,6 +2,7 @@
 
 (function(window, angular, events, undefined) {
     angular.module('sis', [
+        'ngResource',
         'sis.api',
         'sis.modules'
     ]);
