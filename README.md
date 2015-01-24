@@ -1,13 +1,13 @@
 # SIS Framework - AngularJS
 Javascript Framework for module discovery and orchestration.
 
-## Installation
+## Installation Instructions
 
 ```bash
 npm install
 npm install -g bower
 bower install
-npm install -g grunt
+npm install -g grunt-cli
 ```
 
 ## Documentation
