@@ -1,6 +1,6 @@
 {
   "name": "sis-framework",
-  "version": "v0.0.3-alpha",
+  "version": "0.0.3-alpha",
   "private": true,
   "dependencies": {},
   "devDependencies": {
