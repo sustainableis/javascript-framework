@@ -18,7 +18,7 @@ module.exports = function(grunt) {
                     'src/users_service.js',
                     'src/weather_service.js',
                 ],
-                dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js',
+                dest: 'dist/<%= pkg.name %>.js',
             }
         },
         uglify: {
@@ -27,8 +27,8 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>-<%= pkg.version %>.min.js': [
-                        'dist/<%= pkg.name %>-<%= pkg.version %>.js',
+                    'dist/<%= pkg.name %>.min.js': [
+                        'dist/<%= pkg.name %>.js',
                     ]
                 }
             }
