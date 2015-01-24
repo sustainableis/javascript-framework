@@ -1,29 +1,27 @@
 module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        ngAnnotate: {
+            options: {
+                singleQuotes: true
+            },
+            dist: {
+                files: [{
+                    expand: true,
+                    src: 'src/**.js',
+                    dest: '.tmp/concat'
+                }]
+            }
+        },
         concat: {
             dist: {
-                src: [
-                    'src/events.js',
-                    'src/framework.js',
-                    'src/data_store_provider.js',
-                    'src/modules_provider.js',
-                    'src/facilities_service.js',
-                    'src/buildings_service.js',
-                    'src/feeds_service.js',
-                    'src/modules_service.js',
-                    'src/oauth_service.js',
-                    'src/organizations_service.js',
-                    'src/outputs_service.js',
-                    'src/users_service.js',
-                    'src/weather_service.js',
-                ],
+                src: '.tmp/concat/src/*.js',
                 dest: 'dist/<%= pkg.name %>.js',
             }
         },
         uglify: {
             options: {
-                mangle: false // Don't change variable and function names
+                mangle: true // Don't change variable and function names
             },
             dist: {
                 files: {
@@ -35,8 +33,9 @@ module.exports = function(grunt) {
         }
     });
 
+    grunt.loadNpmTasks('grunt-ng-annotate');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('default', ['concat:dist', 'uglify:dist']);
+    grunt.registerTask('default', ['ngAnnotate:dist', 'concat:dist', 'uglify:dist']);
 }
