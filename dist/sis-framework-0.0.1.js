@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+(function() {
     var topics = {};
 
     var _subscribe = function(topic, listener) {
@@ -349,7 +349,110 @@
             ]);
         }
     ]);
+// TODO: Inject underscore.js and jQuery as dependencies or remove references to them
+})(window, window.angular, window.events);
 
+'use strict';
+
+(function(angular) {
+    /**
+     * Resource for retrieving Facilties
+     *
+     * @param {number|string} id
+     * @param {string} controller
+     * @param {string} verb
+     * @param {string} action
+     *
+     * Endpoints example:
+     *  - /v1/facilities
+     *  - /v1/facilities/1
+     *  - /v1/facilities/1/outputs
+     *  - /v1/facilities?organization_id=1
+     *  - /v1/facilities/outputs/types
+     *  - /v1/facilities/1/outputs/tree/validate
+     *  - /v1/facilities/1/wms/products
+     */
+    angular.module('sis.api').factory('FacilitiesService', [
+        '$resource',
+        'url',
+        'version',
+        function($resource, url, version) {
+            return $resource(url + version + '/facilities/:id/:controller/:verb/:action', {
+                id: '@id',
+                controller: '@controller',
+                verb: '@verb',
+                action: '@action'
+            });
+        }
+    ]);
+})(window.angular);
+
+'use strict';
+
+(function(angular) {
+    /**
+     * Resource for retrieving Buildings
+     *
+     * @param {number|string} id
+     * @param {string} controller
+     * @param {string} verb
+     *
+     * Endpoints example:
+     *  - /v1/buildings
+     *  - /v1/buildings/1
+     *  - /v1/buildings/1/outputs
+     *  - /v1/buildings/1/outputs?category=demand_usage
+     *  - /v1/buildings?facility_id=1
+     */
+    angular.module('sis.api').factory('BuildingsService', [
+        '$resource',
+        'url',
+        'version',
+        function($resource, url, version) {
+            return $resource(url + version + '/buildings/:id/:controller/:verb', {
+                id: '@id',
+                controller: '@controller',
+                verb: '@verb'
+            });
+        }
+    ]);
+})(window.angular);
+
+'use strict';
+
+(function(angular) {
+    /**
+     * Resource for retrieving Feeds
+     *
+     * @param {number|string} id
+     * @param {string} controller
+     * @param {string} verb
+     *
+     * Endpoints example:
+     *  - /v1/feeds
+     *  - /v1/feeds/1
+     *  - /v1/feeds/1/outputs
+     *  - /v1/feeds/1/outputs?category=demand_usage
+     *  - /v1/feeds?facility_id=1
+     *  - /v1/feeds/types
+     */
+    angular.module('sis.api').factory('FeedsService', [
+        '$resource',
+        'url',
+        'version',
+        function($resource, url, version) {
+            return $resource(url + version + '/feeds/:id/:controller/:verb', {
+                id: '@id',
+                controller: '@controller',
+                verb: '@verb'
+            });
+        }
+    ]);
+})(window.angular);
+
+'use strict';
+
+(function(angular) {
     /**
      * ModulesService mockup. It's temporary. It will be replaced with a proper
      * resource when the API implementation for the endpoints is ready.
@@ -492,7 +595,11 @@
             }
         }
     ]);
+})(window.angular);
 
+'use strict';
+
+(function(angular) {
     /**
      * Resource for authorization using Oauth2
      *
@@ -510,7 +617,11 @@
             });
         }
     ]);
+})(window.angular);
 
+'use strict';
+
+(function(angular) {
     /**
      * Resource for retrieving Organizations
      *
@@ -536,62 +647,11 @@
             });
         }
     ]);
+})(window.angular);
 
-    /**
-     * Resource for retrieving Buildings
-     *
-     * @param {number|string} id
-     * @param {string} controller
-     * @param {string} verb
-     *
-     * Endpoints example:
-     *  - /v1/buildings
-     *  - /v1/buildings/1
-     *  - /v1/buildings/1/outputs
-     *  - /v1/buildings/1/outputs?category=demand_usage
-     *  - /v1/buildings?facility_id=1
-     */
-    angular.module('sis.api').factory('BuildingsService', [
-        '$resource',
-        'url',
-        'version',
-        function($resource, url, version) {
-            return $resource(url + version + '/buildings/:id/:controller/:verb', {
-                id: '@id',
-                controller: '@controller',
-                verb: '@verb'
-            });
-        }
-    ]);
+'use strict';
 
-    /**
-     * Resource for retrieving Feeds
-     *
-     * @param {number|string} id
-     * @param {string} controller
-     * @param {string} verb
-     *
-     * Endpoints example:
-     *  - /v1/feeds
-     *  - /v1/feeds/1
-     *  - /v1/feeds/1/outputs
-     *  - /v1/feeds/1/outputs?category=demand_usage
-     *  - /v1/feeds?facility_id=1
-     *  - /v1/feeds/types
-     */
-    angular.module('sis.api').factory('FeedsService', [
-        '$resource',
-        'url',
-        'version',
-        function($resource, url, version) {
-            return $resource(url + version + '/feeds/:id/:controller/:verb', {
-                id: '@id',
-                controller: '@controller',
-                verb: '@verb'
-            });
-        }
-    ]);
-
+(function(angular) {
     /**
      * Resource for retrieving Outputs
      *
@@ -618,7 +678,11 @@
             });
         }
     ]);
+})(window.angular);
 
+'use strict';
+
+(function(angular) {
     /**
      * Resource for retrieving Users
      *
@@ -644,7 +708,11 @@
             });
         }
     ]);
+})(window.angular);
 
+'use strict';
+
+(function(angular) {
     /**
      * Resource for retrieving Weather
      *
@@ -667,42 +735,6 @@
                 id: '@id',
                 controller: '@controller',
                 verb: '@verb'
-            });
-        }
-    ]);
-// TODO: Inject underscore.js and jQuery as dependencies or remove references to them
-})(window, window.angular, window.events);
-
-'use strict';
-
-(function(angular) {
-    /**
-     * Resource for retrieving Facilties
-     *
-     * @param {number|string} id
-     * @param {string} controller
-     * @param {string} verb
-     * @param {string} action
-     *
-     * Endpoints example:
-     *  - /v1/facilities
-     *  - /v1/facilities/1
-     *  - /v1/facilities/1/outputs
-     *  - /v1/facilities?organization_id=1
-     *  - /v1/facilities/outputs/types
-     *  - /v1/facilities/1/outputs/tree/validate
-     *  - /v1/facilities/1/wms/products
-     */
-    angular.module('sis.api').factory('FacilitiesService', [
-        '$resource',
-        'url',
-        'version',
-        function($resource, url, version) {
-            return $resource(url + version + '/facilities/:id/:controller/:verb/:action', {
-                id: '@id',
-                controller: '@controller',
-                verb: '@verb',
-                action: '@action'
             });
         }
     ]);
