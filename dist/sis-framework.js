@@ -145,7 +145,7 @@
 
 'use strict';
 
-(function(angular) {
+(function(angular, _) {
     /**
      * Provider for managing API calls
      */
@@ -252,12 +252,11 @@
             }
         ];
     });
-// TODO: Inject underscore
-})(window.angular);
+})(window.angular, window._);
 
 'use strict';
 
-(function(angular, events) {
+(function(angular, events, _, $) {
     /**
      * Provider for orchestrating the modules inserted on the page
      */
@@ -358,8 +357,7 @@
             }
         ];
     });
-// TODO: Inject underscore and jquery
-})(window.angular, window.events);
+})(window.angular, window.events, window._, window.$);
 
 'use strict';
 
