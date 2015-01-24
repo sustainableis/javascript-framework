@@ -35,71 +35,60 @@
     /**
      * Interceptor for requests that sets the Authorization header
      */
-    angular.module('sis.api').factory('authInterceptor', [
-        '$q',
-        'sisConfiguration',
-        function($q, sisConfiguration) {
-            return {
-                request: function(config) {
-                    config.headers = config.headers || {};
+    angular.module('sis.api').factory('authInterceptor', function($q,
+        sisConfiguration) {
+        return {
+            request: function(config) {
+                config.headers = config.headers || {};
 
-                    if (config.data && typeof config.data === 'object') {
-                        config.data = $.param(config.data);
-                    }
-
-                    if (sisConfiguration.token) {
-                        config.headers.Authorization = 'Bearer ' + sisConfiguration.token;
-                    }
-
-                    return config;
-                },
-                response: function(response) {
-                    if (response.status === 503) {
-                        // TODO: Cover errors
-                    }
-
-                    return response || $q.when(response);
+                if (config.data && typeof config.data === 'object') {
+                    config.data = $.param(config.data);
                 }
+
+                if (sisConfiguration.token) {
+                    config.headers.Authorization = 'Bearer ' + sisConfiguration.token;
+                }
+
+                return config;
+            },
+            response: function(response) {
+                if (response.status === 503) {
+                    // TODO: Cover errors
+                }
+
+                return response || $q.when(response);
             }
         }
-    ]);
+    });
 
     /**
      * Configuration for the sis.api module
      */
-    angular.module('sis.api').config([
-        '$httpProvider',
-        '$logProvider',
-        'sisConfigurationProvider',
-        function ($httpProvider, $logProvider, sisConfigurationProvider) {
-            $httpProvider.defaults.headers.post['Content-Type'] = 
-                'application/x-www-form-urlencoded; charset=UTF-8;';
+    angular.module('sis.api').config(function($httpProvider, $logProvider,
+        sisConfigurationProvider) {
+        $httpProvider.defaults.headers.post['Content-Type'] = 
+            'application/x-www-form-urlencoded; charset=UTF-8;';
 
-            // $httpProvider.defaults.useXDomain = true;
-            // delete $httpProvider.defaults.headers.common['X-Requested-With'];
+        // $httpProvider.defaults.useXDomain = true;
+        // delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
-            $httpProvider.interceptors.push('authInterceptor');
+        $httpProvider.interceptors.push('authInterceptor');
 
-            // Must delay because the sisConfigurationProvider has to be set
-            // TODO: Find a better way
-            setTimeout(function() {
-                $logProvider.debugEnabled(sisConfigurationProvider.debug || false);
-            });
-        }
-    ]);
+        // Must delay because the sisConfigurationProvider has to be set
+        // TODO: Find a better way
+        setTimeout(function() {
+            $logProvider.debugEnabled(sisConfigurationProvider.debug || false);
+        });
+    });
 
     /**
      * Configuration for the sis.modules module
      */
-    angular.module('sis.modules').config([
-        '$sceDelegateProvider',
-        'path',
-        function ($sceDelegateProvider, path) {
-            // Allow to load remote directives
-            $sceDelegateProvider.resourceUrlWhitelist([
-                'self',
-                path
-            ]);
-        }
-    ]);
+    angular.module('sis.modules').config(function($sceDelegateProvider, path) {
+        // Allow to load remote directives
+        $sceDelegateProvider.resourceUrlWhitelist([
+            'self',
+            path
+        ]);
+    });
 })(window.angular);

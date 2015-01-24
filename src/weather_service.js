@@ -14,16 +14,12 @@
      *  - /v1/weather/accounts/1
      *  - /v1/weather/locations/1/types
      */
-    angular.module('sis.api').factory('WeatherService', [
-        '$resource',
-        'url',
-        'version',
-        function($resource, url, version) {
-            return $resource(url + version + '/weather/:controller/:id/:verb', {
-                id: '@id',
-                controller: '@controller',
-                verb: '@verb'
-            });
-        }
-    ]);
+    angular.module('sis.api').factory('WeatherService', function($resource,
+        url, version) {
+        return $resource(url + version + '/weather/:controller/:id/:verb', {
+            id: '@id',
+            controller: '@controller',
+            verb: '@verb'
+        });
+    });
 })(window.angular);

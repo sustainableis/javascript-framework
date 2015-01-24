@@ -18,17 +18,13 @@
      *  - /v1/facilities/1/outputs/tree/validate
      *  - /v1/facilities/1/wms/products
      */
-    angular.module('sis.api').factory('FacilitiesService', [
-        '$resource',
-        'url',
-        'version',
-        function($resource, url, version) {
-            return $resource(url + version + '/facilities/:id/:controller/:verb/:action', {
-                id: '@id',
-                controller: '@controller',
-                verb: '@verb',
-                action: '@action'
-            });
-        }
-    ]);
+    angular.module('sis.api').factory('FacilitiesService', function($resource,
+        url, version) {
+        return $resource(url + version + '/facilities/:id/:controller/:verb/:action', {
+            id: '@id',
+            controller: '@controller',
+            verb: '@verb',
+            action: '@action'
+        });
+    });
 })(window.angular);

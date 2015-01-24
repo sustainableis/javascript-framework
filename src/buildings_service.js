@@ -15,16 +15,12 @@
      *  - /v1/buildings/1/outputs?category=demand_usage
      *  - /v1/buildings?facility_id=1
      */
-    angular.module('sis.api').factory('BuildingsService', [
-        '$resource',
-        'url',
-        'version',
-        function($resource, url, version) {
-            return $resource(url + version + '/buildings/:id/:controller/:verb', {
-                id: '@id',
-                controller: '@controller',
-                verb: '@verb'
-            });
-        }
-    ]);
+    angular.module('sis.api').factory('BuildingsService', function($resource,
+        url, version) {
+        return $resource(url + version + '/buildings/:id/:controller/:verb', {
+            id: '@id',
+            controller: '@controller',
+            verb: '@verb'
+        });
+    });
 })(window.angular);
