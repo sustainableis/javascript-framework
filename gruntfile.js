@@ -6,6 +6,8 @@ module.exports = function(grunt) {
                 src: [
                     'src/events.js',
                     'src/framework.js',
+                    'src/data_store_provider.js',
+                    'src/modules_provider.js',
                     'src/facilities_service.js',
                     'src/buildings_service.js',
                     'src/feeds_service.js',
