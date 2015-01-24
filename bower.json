@@ -1,7 +1,7 @@
 {
   "name": "sis-framework",
   "version": "0.0.1",
-  "main": "dist/sis-framework.js",
+  "main": "dist/sis-framework-0.0.1.js",
   "private": true,
   "homepage": "https://github.com/sustainableis/javascript-framework",
   "description": "SIS Framework",
