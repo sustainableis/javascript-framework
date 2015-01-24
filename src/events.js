@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+(function() {
     var topics = {};
 
     var _subscribe = function(topic, listener) {
