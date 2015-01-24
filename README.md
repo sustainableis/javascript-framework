@@ -1,7 +1,7 @@
 # SIS Framework - AngularJS
 Javascript Framework for module discovery and orchestration.
 
-## Installation Instructions
+## Installation
 
 ```bash
 npm install
@@ -10,7 +10,7 @@ bower install
 npm install -g grunt-cli
 ```
 
-## Build Instructions
+## Build
 ```bash
 grunt concat:dist
 grunt uglify:dist
@@ -24,6 +24,16 @@ grunt
 
 ## Running Tests
 To be added.
+
+## Development
+Include as bower package into an application:
+```javascript
+{
+    "dependencies": {
+        "sis-framework": "git@github.com:sustainableis/javascript-framework.git"
+    }
+}
+```
 
 ## Documentation
 This is an AngularJS framework and will be a bower private package which can be installed on each of the applications that require to use modules.
