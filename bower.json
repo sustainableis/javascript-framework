@@ -13,7 +13,6 @@
   "dependencies": {
     "angular": "latest",
     "underscore": "~1.7.0",
-    // TODO: Add jQuery
     "angular-resource": "~1.3.10"
   }
 }
