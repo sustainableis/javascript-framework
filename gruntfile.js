@@ -3,7 +3,11 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         concat: {
             dist: {
-                src: ['src/events.js', 'src/framework.js'],
+                src: [
+                    'src/events.js',
+                    'src/framework.js',
+                    'src/facilities_service.js'
+                ],
                 dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js',
             }
         },
@@ -14,8 +18,7 @@ module.exports = function(grunt) {
             dist: {
                 files: {
                     'dist/<%= pkg.name %>-<%= pkg.version %>.min.js': [
-                        'src/events.js',
-                        'src/framework.js'
+                        'dist/<%= pkg.name %>-<%= pkg.version %>.js',
                     ]
                 }
             }
