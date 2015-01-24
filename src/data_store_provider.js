@@ -1,6 +1,6 @@
 'use strict';
 
-(function(angular) {
+(function(angular, _) {
     /**
      * Provider for managing API calls
      */
@@ -107,5 +107,4 @@
             }
         ];
     });
-// TODO: Inject underscore
-})(window.angular);
+})(window.angular, window._);

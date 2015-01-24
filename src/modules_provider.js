@@ -1,6 +1,6 @@
 'use strict';
 
-(function(angular, events) {
+(function(angular, events, _, $) {
     /**
      * Provider for orchestrating the modules inserted on the page
      */
@@ -101,5 +101,4 @@
             }
         ];
     });
-// TODO: Inject underscore and jquery
-})(window.angular, window.events);
+})(window.angular, window.events, window._, window.$);
