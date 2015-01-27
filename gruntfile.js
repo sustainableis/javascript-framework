@@ -15,7 +15,10 @@ module.exports = function(grunt) {
         },
         concat: {
             dist: {
-                src: '.tmp/concat/src/*.js',
+                src: [
+                    '.tmp/concat/src/framework.js',
+                    '.tmp/concat/src/**(!framework).js'
+                ],
                 dest: 'dist/<%= pkg.name %>.js',
             }
         },
