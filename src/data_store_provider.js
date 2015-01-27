@@ -8,7 +8,7 @@
         this.cache = {};
 
         this.$get = function($injector, $log, OauthService, FacilitiesService,
-            OrganizationsService, BuildingssService, FeedsService, OutputsService,
+            OrganizationsService, BuildingsService, FeedsService, OutputsService,
             UsersService, WeatherService) {
             var _this = this;
 
