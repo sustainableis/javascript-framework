@@ -2,7 +2,7 @@
 
 (function(angular) {
     /**
-     * Resource for retrieving Facilties
+     * Resource for retrieving Facilities
      *
      * @param {number|string} id
      * @param {string} controller
