@@ -2,7 +2,7 @@
 
 (function(angular) {
     /**
-     * Resource for retrieving Modules
+     * Resource for retrieving Views
      *
      * @param {number|string} id
      * @param {string} controller
@@ -10,13 +10,14 @@
      * @param {string} action
      *
      * Endpoints example:
-     *  - /v1/modules
-     *  - /v1/modules/1
-     *  - /v1/modules/1/channels
+     *  - /v1/views
+     *  - /v1/views/1
+     *  - /v1/views/1/modules
+     *  - /v1/views?organization_id=1
      */
-    angular.module('sis.api').factory('ModulesService', function($resource,
+    angular.module('sis.api').factory('ViewsService', function($resource,
         url, version) {
-        return $resource(url + version + '/modules/:id/:controller/:verb/:action', {
+        return $resource(url + version + '/views/:id/:controller/:verb/:action', {
             id: '@id',
             controller: '@controller',
             verb: '@verb',
