@@ -21,6 +21,10 @@
       id: '@id',
       verb: '@verb',
       verb_id: '@verb_id'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   });
 })(window.angular);
