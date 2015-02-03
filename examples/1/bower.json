@@ -1,0 +1,13 @@
+{
+  "name": "example",
+  "version": "0.0.1",
+  "homepage": "",
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "angular": "latest",
+    "angular-route": "~1.2.21",
+    "angular-resource": "~1.2.21",
+    "underscore": "~1.7.0",
+    "sis-framework": "git@github.com:sustainableis/javascript-framework.git"
+  }
+}
