@@ -1,5 +1,3 @@
-'use strict';
-
 (function(angular) {
   /**
    * Resource for retrieving Utilities
