@@ -163,20 +163,34 @@
        * concatenated with 'Service'.
        *
        * @param {string} topic
+       * @param {object} payload
        * @param {function} callback
        */
-      var _call = function(topic, callback) {
+      var _call = function(method, topic, payload, callback) {
         var topic = _decode_topic(topic),
           service_name = topic.service.charAt(0).toUpperCase() +
           topic.service.slice(1) + 'Service',
           service = $injector.get(service_name),
           call_params = _.omit(topic, 'service');
 
-        // TODO: Call query or get depending on the response (array or not)
-        // TODO: Handle failed responses
-        service.query(call_params, function(data) {
-          callback(data);
-        });
+        switch(method) {
+          case 'get':
+            // TODO: Call query or get depending on the response (array or not)
+            // TODO: Handle failed responses
+            service.query(call_params, function(data) {
+              callback(data);
+            });
+          break;
+
+          case 'post':
+            service.save(call_params, payload, function(data) {
+              callback(data);
+            });
+          break;
+
+          default:
+            $log.error('Invalid method', method, 'for calling', topic);
+        }
       }
 
       /**
@@ -201,8 +215,24 @@
         });
       }
 
+      /**
+       * Send data for a topic to the API
+       *
+       * @param {string} topic
+       * @param {object} payload
+       * @param {function} callback
+       */
+      var _post = function(topic, payload, callback) {
+        _call('post', topic, payload, function(data) {
+          $log.debug('Returned', data, 'from API', 'for topic', topic);
+
+          callback(data);
+        });
+      }
+
       return {
-        get: _get
+        get: _get,
+        post: _post
       }
     }]
   });
@@ -353,23 +383,29 @@
           var call = ModulesService.query({
             id: module.id,
             controller: 'channels'
-          }, function(data) {
-            module['channels'] = data;
+          }, function(channels) {
+            $log.debug('Framework sent', channels, 'on', module.id + ':channels');
 
-            $log.debug('Framework sent', data, 'on', module.id + ':channels');
+            events.publish(module.id + ':channels', channels);
 
-            events.publish(module.id + ':channels', data);
+            // Send data from channels defined by the module
+            _.each(channels, function(channel) {
+              dataStore.get(channel.topic, function(data) {
+                $log.debug('Framework sent', data, 'on', module.id + ':' + channel.route);
+
+                events.publish(module.id + ':' + channel.route, data);
+              });
+            });
           });
 
           calls.push(call);
         });
 
-        // When all the channels are retrieved get data from them
         $q.all(calls).then(function() {
           callback();
 
-          events.subscribe('new', function(data) {
-            $log.debug('Framework got', data, 'on', 'new');
+          events.subscribe('get', function(data) {
+            $log.debug('Framework got', data, 'on', 'get');
 
             dataStore.get(data.channel, function(_data) {
               $log.debug('Framework sent', _data, 'on', data.caller);
@@ -378,25 +414,13 @@
             });
           });
 
-          events.subscribe('refresh', function(data) {
-            $log.debug('Framework got', data, 'on', 'new');
-          });
+          events.subscribe('post', function(data) {
+            $log.debug('Framework got', data, 'on', 'post');
 
-          _.each(_this.modules, function(module) {
-            // Send data to the module for each channel
-            // TODO: Probably it's best to get data as soon as the channels are retrieved for each module
-            _.each(module.channels, function(channel) {
-              // Subscribe to all channels in the framework as well to enable two-way communication
-              events.subscribe(channel.topic, function(data) {
-                $log.debug('Framework got', data, 'on', channel.topic);
-              });
+            dataStore.post(data.topic, data.payload, function(_data) {
+              $log.debug('Framework sent', _data, 'on', data.caller);
 
-              dataStore.get(channel.topic, function(data) {
-                $log.debug('Framework sent', data, 'on', module.id + ':' + channel.route);
-
-                events.publish(module.id + ':' + channel.route, data);
-              });
-
+              events.publish(data.caller, _data);
             });
           });
         });
