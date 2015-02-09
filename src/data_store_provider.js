@@ -4,6 +4,8 @@
    */
   angular.module('sis.modules').provider('dataStore', function() {
     this.cache = {};
+    this.GET = 0;
+    this.POST = 1;
 
     this.$get = function($injector, $log, OauthService, FacilitiesService,
       OrganizationsService, BuildingsService, FeedsService, OutputsService,
@@ -53,16 +55,16 @@
           service = $injector.get(service_name),
           call_params = _.omit(topic, 'service');
 
+        // TODO: Handle failed responses
         switch(method) {
-          case 'get':
+          case _this.GET:
             // TODO: Call query or get depending on the response (array or not)
-            // TODO: Handle failed responses
             service.query(call_params, function(data) {
               callback(data);
             });
           break;
 
-          case 'post':
+          case _this.POST:
             service.save(call_params, payload, function(data) {
               callback(data);
             });
@@ -86,7 +88,7 @@
           return callback(_this.cache[topic]);
         }
 
-        _call(topic, function(data) {
+        _call(_this.GET, topic, null, function(data) {
           $log.debug('Returned', data, 'from API', 'for topic', topic);
 
           _this.cache[topic] = data;
@@ -103,7 +105,7 @@
        * @param {function} callback
        */
       var _post = function(topic, payload, callback) {
-        _call('post', topic, payload, function(data) {
+        _call(_this.POST, topic, payload, function(data) {
           $log.debug('Returned', data, 'from API', 'for topic', topic);
 
           callback(data);
