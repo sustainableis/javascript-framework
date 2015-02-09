@@ -35,23 +35,29 @@
           var call = ModulesService.query({
             id: module.id,
             controller: 'channels'
-          }, function(data) {
-            module['channels'] = data;
+          }, function(channels) {
+            $log.debug('Framework sent', channels, 'on', module.id + ':channels');
 
-            $log.debug('Framework sent', data, 'on', module.id + ':channels');
+            events.publish(module.id + ':channels', channels);
 
-            events.publish(module.id + ':channels', data);
+            // Send data from channels defined by the module
+            _.each(channels, function(channel) {
+              dataStore.get(channel.topic, function(data) {
+                $log.debug('Framework sent', data, 'on', module.id + ':' + channel.route);
+
+                events.publish(module.id + ':' + channel.route, data);
+              });
+            });
           });
 
           calls.push(call);
         });
 
-        // When all the channels are retrieved get data from them
         $q.all(calls).then(function() {
           callback();
 
-          events.subscribe('new', function(data) {
-            $log.debug('Framework got', data, 'on', 'new');
+          events.subscribe('get', function(data) {
+            $log.debug('Framework got', data, 'on', 'get');
 
             dataStore.get(data.channel, function(_data) {
               $log.debug('Framework sent', _data, 'on', data.caller);
@@ -60,25 +66,13 @@
             });
           });
 
-          events.subscribe('refresh', function(data) {
-            $log.debug('Framework got', data, 'on', 'new');
-          });
+          events.subscribe('post', function(data) {
+            $log.debug('Framework got', data, 'on', 'post');
 
-          _.each(_this.modules, function(module) {
-            // Send data to the module for each channel
-            // TODO: Probably it's best to get data as soon as the channels are retrieved for each module
-            _.each(module.channels, function(channel) {
-              // Subscribe to all channels in the framework as well to enable two-way communication
-              events.subscribe(channel.topic, function(data) {
-                $log.debug('Framework got', data, 'on', channel.topic);
-              });
+            dataStore.post(data.topic, data.payload, function(_data) {
+              $log.debug('Framework sent', _data, 'on', data.caller);
 
-              dataStore.get(channel.topic, function(data) {
-                $log.debug('Framework sent', data, 'on', module.id + ':' + channel.route);
-
-                events.publish(module.id + ':' + channel.route, data);
-              });
-
+              events.publish(data.caller, _data);
             });
           });
         });
