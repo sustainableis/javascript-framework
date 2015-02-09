@@ -43,20 +43,34 @@
        * concatenated with 'Service'.
        *
        * @param {string} topic
+       * @param {object} payload
        * @param {function} callback
        */
-      var _call = function(topic, callback) {
+      var _call = function(method, topic, payload, callback) {
         var topic = _decode_topic(topic),
           service_name = topic.service.charAt(0).toUpperCase() +
           topic.service.slice(1) + 'Service',
           service = $injector.get(service_name),
           call_params = _.omit(topic, 'service');
 
-        // TODO: Call query or get depending on the response (array or not)
-        // TODO: Handle failed responses
-        service.query(call_params, function(data) {
-          callback(data);
-        });
+        switch(method) {
+          case 'get':
+            // TODO: Call query or get depending on the response (array or not)
+            // TODO: Handle failed responses
+            service.query(call_params, function(data) {
+              callback(data);
+            });
+          break;
+
+          case 'post':
+            service.save(call_params, payload, function(data) {
+              callback(data);
+            });
+          break;
+
+          default:
+            $log.error('Invalid method', method, 'for calling', topic);
+        }
       }
 
       /**
@@ -81,8 +95,24 @@
         });
       }
 
+      /**
+       * Send data for a topic to the API
+       *
+       * @param {string} topic
+       * @param {object} payload
+       * @param {function} callback
+       */
+      var _post = function(topic, payload, callback) {
+        _call('post', topic, payload, function(data) {
+          $log.debug('Returned', data, 'from API', 'for topic', topic);
+
+          callback(data);
+        });
+      }
+
       return {
-        get: _get
+        get: _get,
+        post: _post
       }
     }
   });
