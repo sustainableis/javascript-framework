@@ -12,7 +12,7 @@
 
   angular.module('sis.api').constant('url', 'http://api.sustainableis.com/');
   angular.module('sis.api').constant('version', 'v1');
-  angular.module('sis.modules').constant('path', 'http://d10t57k8pf74ki.cloudfront.net/**');
+  angular.module('sis.modules').constant('path', 'http://d10t57k8pf74ki.cloudfront.net/');
 
   /**
    * Provider for configuration of the sis.api module
@@ -90,7 +90,7 @@
     // Allow to load remote directives
     $sceDelegateProvider.resourceUrlWhitelist([
       'self',
-      path
+      path + '**'
     ]);
   });
 })(window.angular);
