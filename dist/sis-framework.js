@@ -12,7 +12,7 @@
 
   angular.module('sis.api').constant('url', 'http://api.sustainableis.com/');
   angular.module('sis.api').constant('version', 'v1');
-  angular.module('sis.modules').constant('path', 'http://d10t57k8pf74ki.cloudfront.net/**');
+  angular.module('sis.modules').constant('path', 'http://d10t57k8pf74ki.cloudfront.net/');
 
   /**
    * Provider for configuration of the sis.api module
@@ -90,7 +90,7 @@
     // Allow to load remote directives
     $sceDelegateProvider.resourceUrlWhitelist([
       'self',
-      path
+      path + '**'
     ]);
   }]);
 })(window.angular);
@@ -124,6 +124,8 @@
    */
   angular.module('sis.modules').provider('dataStore', function() {
     this.cache = {};
+    this.GET = 0;
+    this.POST = 1;
 
     this.$get = ['$injector', '$log', 'OauthService', 'FacilitiesService', 'OrganizationsService', 'BuildingsService', 'FeedsService', 'OutputsService', 'UsersService', 'WeatherService', function($injector, $log, OauthService, FacilitiesService,
       OrganizationsService, BuildingsService, FeedsService, OutputsService,
@@ -173,16 +175,16 @@
           service = $injector.get(service_name),
           call_params = _.omit(topic, 'service');
 
+        // TODO: Handle failed responses
         switch(method) {
-          case 'get':
+          case _this.GET:
             // TODO: Call query or get depending on the response (array or not)
-            // TODO: Handle failed responses
             service.query(call_params, function(data) {
               callback(data);
             });
           break;
 
-          case 'post':
+          case _this.POST:
             service.save(call_params, payload, function(data) {
               callback(data);
             });
@@ -206,7 +208,7 @@
           return callback(_this.cache[topic]);
         }
 
-        _call(topic, function(data) {
+        _call(_this.GET, topic, null, function(data) {
           $log.debug('Returned', data, 'from API', 'for topic', topic);
 
           _this.cache[topic] = data;
@@ -223,7 +225,7 @@
        * @param {function} callback
        */
       var _post = function(topic, payload, callback) {
-        _call('post', topic, payload, function(data) {
+        _call(_this.POST, topic, payload, function(data) {
           $log.debug('Returned', data, 'from API', 'for topic', topic);
 
           callback(data);
@@ -342,6 +344,27 @@
     url, version) {
     return $resource(url + version + '/files/:id/:verb', {
       id: '@id',
+      verb: '@verb'
+    });
+  }]);
+})(window.angular);
+(function(angular) {
+  /**
+   * Resource for retrieving Layouts
+   *
+   * @param {number|string} id
+   * @param {string} controller
+   * @param {string} verb
+   *
+   * Endpoints example:
+   *  - /v1/layouts
+   *  - /v1/layouts/1
+   */
+  angular.module('sis.api').factory('LayoutsService', ['$resource', 'url', 'version', function($resource,
+    url, version) {
+    return $resource(url + version + '/layouts/:id/:controller/:verb', {
+      id: '@id',
+      controller: '@controller',
       verb: '@verb'
     });
   }]);
@@ -570,6 +593,47 @@
     });
   }]);
 })(window.angular);
+(function(angular, events, _, $) {
+  /**
+   * Provider for orchestrating the modules inserted on the page
+   */
+  angular.module('sis.modules').provider('sisViews', function() {
+    this.$get = ['$injector', '$q', '$log', 'FacilitiesService', 'LayoutsService', 'path', function($injector, $q, $log, FacilitiesService, LayoutsService, path) {
+      var _this = this;
+
+      /**
+       * Search for the view
+       */
+      var _load = function(options, callback) {
+        FacilitiesService.query({
+          id: options.id,
+          controller: 'views',
+          slug: options.slug
+        }, function(views) {
+          $log.debug(views);
+
+          var view = views[0];
+
+          LayoutsService.get({
+            id: view.layout_id
+          }, function(layout) {
+            $log.debug(layout);
+
+            options.scope.tpl = path + layout.slug + '/' + layout.slug + '.html';
+
+            options.scope.$on('$includeContentLoaded', function(){
+              callback();
+            });
+          });
+        });
+      }
+
+      return {
+        load: _load,
+      }
+    }]
+  });
+})(window.angular, window.events, window._, window.$);
 (function(angular) {
   /**
    * Resource for retrieving Views
