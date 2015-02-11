@@ -3,7 +3,7 @@
    * Provider for orchestrating the modules inserted on the page
    */
   angular.module('sis.modules').provider('sisViews', function() {
-    this.$get = function($injector, $q, $log, $compile, FacilitiesService, LayoutsService, ViewsService, path) {
+    this.$get = function($injector, $q, $log, $compile, $rootScope, FacilitiesService, LayoutsService, ViewsService, path) {
       var _this = this;
 
       /**
@@ -24,9 +24,9 @@
           }, function(layout) {
             $log.debug(layout);
 
-            options.scope.tpl = path + layout.slug + '/' + layout.slug + '.html';
+            $rootScope.tpl = path + layout.slug + '/' + layout.slug + '.html';
 
-            options.scope.$on('$includeContentLoaded', function() {
+            $rootScope.$on('$includeContentLoaded', function() {
               var placeholders = $('.placeholder');
 
               ViewsService.query({
@@ -39,14 +39,9 @@
                   var module = _.findWhere(modules, {placeholder: placeholder.id});
 
                   if (module) {
-                    var script_tag = angular.element('<script>').attr({
-                                        type: 'text/javascript',
-                                        src: path + module.slug + '/' + module.slug + '.js'
-                                      });
-                    var module_tag = $compile('<' + module.slug + ' class="module" data-id="' + module.id + '">')(options.scope);
+                    var module_element = $compile('<' + module.slug + ' class="module" data-id="' + module.id + '">')($rootScope);
 
-                    angular.element(placeholder).append(module_tag);
-                    //angular.element('body').append(script_tag);
+                    angular.element(placeholder).append(module_element);
                   }
                 });
 

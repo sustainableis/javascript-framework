@@ -5,22 +5,36 @@
   angular.module('sis.modules').provider('sisModules', function() {
     this.modules = [];
 
-    this.$get = function($injector, $q, $log, dataStore, ModulesService) {
+    this.$get = function($injector, $q, $log, $rootScope, $compile, dataStore, ModulesService) {
       var _this = this;
 
       /**
-       * Builds an internal list with modules embedded on the page
+       * Builds an internal list with modules embedded on the page and loads
+       * script files
        */
-      var _discover = function() {
-        // TODO: Inject jQuery or use something else for DOM selection
-        var modules = $('.module');
+      var _discover = function(scope) {
+        var modules = angular.element('.module');
 
         _.each(modules, function(module) {
-          var id = angular.element(module).data('id');
+          var id = angular.element(module).data('id'),
+              parent = angular.element(module).parent(),
+              tag = angular.element(module).prop('tagName').toLowerCase(),
+              script = document.createElement('script');
 
           _this.modules.push({
             id: id
           });
+
+          angular.element(module).remove();
+
+          script.src = path + tag + '/' + tag + '.js';
+          script.onload = function() {
+            var new_module = $compile(module)($rootScope);
+
+            parent.append(new_module);
+          }
+
+           document.getElementsByTagName('head')[0].appendChild(script);
         });
       }
 
