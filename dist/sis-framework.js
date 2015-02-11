@@ -86,12 +86,15 @@
   /**
    * Configuration for the sis.modules module
    */
-  angular.module('sis.modules').config(['$sceDelegateProvider', 'path', function($sceDelegateProvider, path) {
+  angular.module('sis.modules').config(['$sceDelegateProvider', '$compileProvider', 'path', function($sceDelegateProvider, $compileProvider, path) {
     // Allow to load remote directives
     $sceDelegateProvider.resourceUrlWhitelist([
       'self',
       path + '**'
     ]);
+
+    // Allow to add directives after bootstraping
+    angular.module('sis.modules').compileProvider = $compileProvider;
   }]);
 })(window.angular);
 (function(angular) {
@@ -376,14 +379,14 @@
   angular.module('sis.modules').provider('sisModules', function() {
     this.modules = [];
 
-    this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', 'dataStore', 'ModulesService', function($injector, $q, $log, $rootScope, $compile, dataStore, ModulesService) {
+    this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', 'dataStore', 'ModulesService', 'path', function($injector, $q, $log, $rootScope, $compile, dataStore, ModulesService, path) {
       var _this = this;
 
       /**
        * Builds an internal list with modules embedded on the page and loads
        * script files
        */
-      var _discover = function(scope) {
+      var _discover = function() {
         var modules = angular.element('.module');
 
         _.each(modules, function(module) {
