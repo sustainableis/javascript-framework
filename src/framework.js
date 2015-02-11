@@ -86,11 +86,14 @@
   /**
    * Configuration for the sis.modules module
    */
-  angular.module('sis.modules').config(function($sceDelegateProvider, path) {
+  angular.module('sis.modules').config(function($sceDelegateProvider, $compileProvider, path) {
     // Allow to load remote directives
     $sceDelegateProvider.resourceUrlWhitelist([
       'self',
       path + '**'
     ]);
+
+    // Allow to add directives after bootstraping
+    angular.module('sis.modules').compileProvider = $compileProvider;
   });
 })(window.angular);

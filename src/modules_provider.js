@@ -5,14 +5,14 @@
   angular.module('sis.modules').provider('sisModules', function() {
     this.modules = [];
 
-    this.$get = function($injector, $q, $log, $rootScope, $compile, dataStore, ModulesService) {
+    this.$get = function($injector, $q, $log, $rootScope, $compile, dataStore, ModulesService, path) {
       var _this = this;
 
       /**
        * Builds an internal list with modules embedded on the page and loads
        * script files
        */
-      var _discover = function(scope) {
+      var _discover = function() {
         var modules = angular.element('.module');
 
         _.each(modules, function(module) {
