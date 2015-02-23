@@ -21,6 +21,11 @@
               tag = angular.element(module).prop('tagName').toLowerCase(),
               script = document.createElement('script');
 
+          // Do not initialize a module twice
+          if (_.findWhere(_this.modules, {id: id})) {
+            return;
+          }
+
           _this.modules.push({
             id: id
           });
