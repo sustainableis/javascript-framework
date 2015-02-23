@@ -73,20 +73,26 @@
           events.subscribe('get', function(data) {
             $log.debug('Framework got', data, 'on', 'get');
 
-            dataStore.get(data.channel, function(_data) {
+            dataStore.get(data.channel, function(_data, error) {
               $log.debug('Framework sent', _data, 'on', data.caller);
 
-              events.publish(data.caller, _data);
+              events.publish(data.caller, {
+                data: _data,
+                error: error
+              });
             });
           });
 
           events.subscribe('post', function(data) {
             $log.debug('Framework got', data, 'on', 'post');
 
-            dataStore.post(data.topic, data.payload, function(_data) {
+            dataStore.post(data.topic, data.payload, function(_data, error) {
               $log.debug('Framework sent', _data, 'on', data.caller);
 
-              events.publish(data.caller, _data);
+              events.publish(data.caller, {
+                data: _data,
+                error: error
+              });
             });
           });
         });
