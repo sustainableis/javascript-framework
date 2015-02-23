@@ -182,14 +182,22 @@
         switch(method) {
           case _this.GET:
             // TODO: Call query or get depending on the response (array or not)
-            service.query(call_params, function(data) {
+            service.query(call_params,
+            function(data) {
               callback(data);
+            },
+            function(error) {
+              callback(null, error);
             });
           break;
 
           case _this.POST:
-            service.save(call_params, payload, function(data) {
+            service.save(call_params, payload,
+            function(data) {
               callback(data);
+            },
+            function(error) {
+              callback(null, error);
             });
           break;
 
@@ -211,12 +219,12 @@
           return callback(_this.cache[topic]);
         }
 
-        _call(_this.GET, topic, null, function(data) {
+        _call(_this.GET, topic, null, function(data, error) {
           $log.debug('Returned', data, 'from API', 'for topic', topic);
 
           _this.cache[topic] = data;
 
-          callback(data);
+          callback(data, error);
         });
       }
 
@@ -228,10 +236,10 @@
        * @param {function} callback
        */
       var _post = function(topic, payload, callback) {
-        _call(_this.POST, topic, payload, function(data) {
+        _call(_this.POST, topic, payload, function(data, error) {
           $log.debug('Returned', data, 'from API', 'for topic', topic);
 
-          callback(data);
+          callback(data, error);
         });
       }
 
@@ -447,20 +455,26 @@
           events.subscribe('get', function(data) {
             $log.debug('Framework got', data, 'on', 'get');
 
-            dataStore.get(data.channel, function(_data) {
+            dataStore.get(data.channel, function(_data, error) {
               $log.debug('Framework sent', _data, 'on', data.caller);
 
-              events.publish(data.caller, _data);
+              events.publish(data.caller, {
+                data: _data,
+                error: error
+              });
             });
           });
 
           events.subscribe('post', function(data) {
             $log.debug('Framework got', data, 'on', 'post');
 
-            dataStore.post(data.topic, data.payload, function(_data) {
+            dataStore.post(data.topic, data.payload, function(_data, error) {
               $log.debug('Framework sent', _data, 'on', data.caller);
 
-              events.publish(data.caller, _data);
+              events.publish(data.caller, {
+                data: _data,
+                error: error
+              });
             });
           });
         });
