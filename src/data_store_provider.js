@@ -59,14 +59,22 @@
         switch(method) {
           case _this.GET:
             // TODO: Call query or get depending on the response (array or not)
-            service.query(call_params, function(data) {
+            service.query(call_params,
+            function(data) {
               callback(data);
+            },
+            function(error) {
+              callback(null, error);
             });
           break;
 
           case _this.POST:
-            service.save(call_params, payload, function(data) {
+            service.save(call_params, payload,
+            function(data) {
               callback(data);
+            },
+            function(error) {
+              callback(null, error);
             });
           break;
 
@@ -88,12 +96,12 @@
           return callback(_this.cache[topic]);
         }
 
-        _call(_this.GET, topic, null, function(data) {
+        _call(_this.GET, topic, null, function(data, error) {
           $log.debug('Returned', data, 'from API', 'for topic', topic);
 
           _this.cache[topic] = data;
 
-          callback(data);
+          callback(data, error);
         });
       }
 
@@ -105,10 +113,10 @@
        * @param {function} callback
        */
       var _post = function(topic, payload, callback) {
-        _call(_this.POST, topic, payload, function(data) {
+        _call(_this.POST, topic, payload, function(data, error) {
           $log.debug('Returned', data, 'from API', 'for topic', topic);
 
-          callback(data);
+          callback(data, error);
         });
       }
 
