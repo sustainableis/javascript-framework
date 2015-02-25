@@ -51,55 +51,64 @@
 
         // Get the channels for each module and send them to the module
         _.each(_this.modules, function(module) {
-          var call = ModulesService.query({
-            id: module.id,
-            controller: 'channels'
-          }, function(channels) {
-            $log.debug('Framework sent', channels, 'on', module.id + ':channels');
+          var call = $q(function(resolve, reject) {
+            ModulesService.query({
+              id: module.id,
+              controller: 'channels'
+            }, function(channels) {
+              $log.debug('Framework sent', channels, 'on', module.id + ':channels');
 
-            events.publish(module.id + ':channels', channels);
+              events.publish(module.id + ':channels', channels);
 
-            // Send data from channels defined by the module
-            _.each(channels, function(channel) {
-              dataStore.get(channel.topic, function(data) {
-                $log.debug('Framework sent', data, 'on', module.id + ':' + channel.route);
+              // Send data from channels defined by the module
+              _.each(channels, function(channel) {
+                dataStore.get(channel.topic, function(data, error) {
+                  $log.debug('Framework sent', data, 'on', module.id + ':' + channel.route);
 
-                events.publish(module.id + ':' + channel.route, data);
+                  events.publish(module.id + ':' + channel.route, {
+                    data: data,
+                    error: error
+                  });
+                });
               });
+
+              resolve();
+            }, function(error) {
+              reject();
             });
           });
 
           calls.push(call);
         });
 
+        events.subscribe('get', function(data) {
+          $log.debug('Framework got', data, 'on', 'get');
+
+          dataStore.get(data.topic, function(_data, error) {
+            $log.debug('Framework sent', _data, 'on', data.caller);
+
+            events.publish(data.caller, {
+              data: _data,
+              error: error
+            });
+          });
+        });
+
+        events.subscribe('post', function(data) {
+          $log.debug('Framework got', data, 'on', 'post');
+
+          dataStore.post(data.topic, data.payload, function(_data, error) {
+            $log.debug('Framework sent', _data, 'on', data.caller);
+
+            events.publish(data.caller, {
+              data: _data,
+              error: error
+            });
+          });
+        });
+
         $q.all(calls).then(function() {
           callback();
-
-          events.subscribe('get', function(data) {
-            $log.debug('Framework got', data, 'on', 'get');
-
-            dataStore.get(data.channel, function(_data, error) {
-              $log.debug('Framework sent', _data, 'on', data.caller);
-
-              events.publish(data.caller, {
-                data: _data,
-                error: error
-              });
-            });
-          });
-
-          events.subscribe('post', function(data) {
-            $log.debug('Framework got', data, 'on', 'post');
-
-            dataStore.post(data.topic, data.payload, function(_data, error) {
-              $log.debug('Framework sent', _data, 'on', data.caller);
-
-              events.publish(data.caller, {
-                data: _data,
-                error: error
-              });
-            });
-          });
         });
       }
 
