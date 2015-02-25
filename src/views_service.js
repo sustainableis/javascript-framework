@@ -13,8 +13,8 @@
    *  - /v1/views/1/modules
    *  - /v1/views?organization_id=1
    */
-  angular.module('sis.api').factory('ViewsService', function($resource,
-    url, version) {
+  angular.module('sis.api').factory('ViewsService', function($resource, url,
+    version) {
     return $resource(url + version + '/views/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',

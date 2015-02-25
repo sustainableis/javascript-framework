@@ -21,22 +21,18 @@
     this.token = null;
     this.debug = false;
 
-    this.$get = [
-      '$injector',
-      function($injector) {
-        return {
-          token: this.token,
-          debug: this.debug
-        }
+    this.$get = function($injector) {
+      return {
+        token: this.token,
+        debug: this.debug
       }
-    ];
+    }
   });
 
   /**
    * Interceptor for requests that sets the Authorization header
    */
-  angular.module('sis.api').factory('authInterceptor', function($q,
-    sisConfiguration) {
+  angular.module('sis.api').factory('authInterceptor', function($q, sisConfiguration) {
     return {
       request: function(config) {
         config.headers = config.headers || {};
@@ -86,7 +82,8 @@
   /**
    * Configuration for the sis.modules module
    */
-  angular.module('sis.modules').config(function($sceDelegateProvider, $compileProvider, path) {
+  angular.module('sis.modules').config(function($sceDelegateProvider, $compileProvider,
+    path) {
     // Allow to load remote directives
     $sceDelegateProvider.resourceUrlWhitelist([
       'self',

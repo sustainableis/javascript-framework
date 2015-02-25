@@ -55,7 +55,6 @@
           service = $injector.get(service_name),
           call_params = _.omit(topic, 'service');
 
-        // TODO: Handle failed responses
         switch(method) {
           case _this.GET:
             // TODO: Call query or get depending on the response (array or not)

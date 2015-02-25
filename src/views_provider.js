@@ -3,13 +3,15 @@
    * Provider for orchestrating the modules inserted on the page
    */
   angular.module('sis.modules').provider('sisViews', function() {
-    this.$get = function($injector, $q, $log, $compile, $rootScope, FacilitiesService, LayoutsService, ViewsService, path) {
+    this.$get = function($injector, $q, $log, $compile, $rootScope,
+      FacilitiesService, LayoutsService, ViewsService, path) {
       var _this = this;
 
       /**
        * Search for the view
        */
       var _load = function(options, callback) {
+        // TODO: Use dataStore instead of the services directly
         FacilitiesService.query({
           id: options.id,
           controller: 'views',
@@ -39,7 +41,9 @@
                   var module = _.findWhere(modules, {placeholder: placeholder.id});
 
                   if (module) {
-                    var module_element = $compile('<' + module.slug + ' class="module" data-id="' + module.id + '">')($rootScope);
+                    var module_markup = '<' + module.slug + ' class="module" data-id="' +
+                                        module.id + '">';
+                        module_element = $compile(module_markup)($rootScope);
 
                     angular.element(placeholder).append(module_element);
                   }
