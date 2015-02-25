@@ -27,10 +27,15 @@
     });
   }
 
+  var _purge = function() {
+    topics = {};
+  }
+
   window.events = {
     subscribe: _subscribe,
     unsubscribe: _unsubscribe,
     publish: _publish,
+    purge: _purge,
     topics: topics
   };
 })();
