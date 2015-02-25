@@ -393,7 +393,7 @@
   angular.module('sis.modules').provider('sisModules', function() {
     this.modules = [];
 
-    this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', 'dataStore', 'ModulesService', 'path', function($injector, $q, $log, $rootScope, $compile, dataStore, ModulesService, path) {
+    this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', 'dataStore', 'path', function($injector, $q, $log, $rootScope, $compile, dataStore, path) {
       var _this = this;
 
       /**
@@ -401,7 +401,8 @@
        * script files
        */
       var _discover = function() {
-        var modules = angular.element('.module');
+        var modules = angular.element('.module'),
+            loads = [];
 
         _.each(modules, function(module) {
           var id = angular.element(module).data('id'),
@@ -417,13 +418,24 @@
           angular.element(module).remove();
 
           script.src = path + tag + '/' + tag + '.js';
-          script.onload = function() {
-            var new_module = $compile(module)($rootScope);
 
-            parent.append(new_module);
-          }
+          var load = $q(function(resolve, reject) {
+            script.onload = function() {
+              var new_module = $compile(module)($rootScope);
 
-           document.getElementsByTagName('head')[0].appendChild(script);
+              parent.append(new_module);
+
+              resolve();
+            }
+          });
+
+          loads.push(load);
+
+          document.getElementsByTagName('head')[0].appendChild(script);
+        });
+
+        $q.all(loads).then(function() {
+          callback();
         });
       }
 
@@ -436,29 +448,29 @@
         // Get the channels for each module and send them to the module
         _.each(_this.modules, function(module) {
           var call = $q(function(resolve, reject) {
-            ModulesService.query({
-              id: module.id,
-              controller: 'channels'
-            }, function(channels) {
-              $log.debug('Framework sent', channels, 'on', module.id + ':channels');
+            dataStore.get('service:modules/id:' + module.id + '/controller:channels',
+              function(data, error) {
+                if (error) {
+                  return reject();
+                }
 
-              events.publish(module.id + ':channels', channels);
+                $log.debug('Framework sent', data, 'on', module.id + ':channels');
 
-              // Send data from channels defined by the module
-              _.each(channels, function(channel) {
-                dataStore.get(channel.topic, function(data, error) {
-                  $log.debug('Framework sent', data, 'on', module.id + ':' + channel.route);
+                events.publish(module.id + ':channels', data);
 
-                  events.publish(module.id + ':' + channel.route, {
-                    data: data,
-                    error: error
+                // Send data from channels defined by the module
+                _.each(data, function(channel) {
+                  dataStore.get(channel.topic, function(_data, _error) {
+                    $log.debug('Framework sent', _data, 'on', module.id + ':' + channel.route);
+
+                    events.publish(module.id + ':' + channel.route, {
+                      data: _data,
+                      error: _error
+                    });
                   });
                 });
-              });
 
-              resolve();
-            }, function(error) {
-              reject();
+                resolve();
             });
           });
 
