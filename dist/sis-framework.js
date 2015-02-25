@@ -279,13 +279,19 @@
     });
   }
 
+  var _purge = function() {
+    topics = {};
+  }
+
   window.events = {
     subscribe: _subscribe,
     unsubscribe: _unsubscribe,
     publish: _publish,
+    purge: _purge,
     topics: topics
   };
 })();
+
 (function(angular) {
   /**
    * Resource for retrieving Facilities
@@ -403,13 +409,9 @@
               tag = angular.element(module).prop('tagName').toLowerCase(),
               script = document.createElement('script');
 
-          // Do not initialize a module twice
-          if (_.findWhere(_this.modules, {id: id})) {
-            return;
-          }
-
           _this.modules.push({
-            id: id
+            id: id,
+            tag: tag
           });
 
           angular.element(module).remove();
@@ -494,9 +496,41 @@
         });
       }
 
+      /*
+       * Destroy the modules on the page when a view that has modules
+       * instantiated is destroyed
+       */
+      var _destroy = function() {
+        // Remove script tags for the modules
+        _.each(_this.modules, function(module) {
+          var src = path + module.tag + '/' + module.tag + '.js',
+              scripts = angular.element('head').find('script');
+
+          _.each(scripts, function(script) {
+            if (script.src === src) {
+              angular.element(script).remove();
+            }
+          });
+        });
+
+        /*
+          TODO: Review this process
+          For pages with multiple views and each view has modules instantiated,
+          clearing all the events listeners and reseting the modules list might
+          cause issues. The destroy event is triggered when a view is destroyed.
+         */
+
+        // Remove all events listeners
+        events.purge();
+
+        // Reset the modules list
+        _this.modules = [];
+      }
+
       return {
         discover: _discover,
-        init: _init
+        init: _init,
+        destroy: _destroy
       }
     }]
   });
