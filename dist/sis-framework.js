@@ -21,22 +21,18 @@
     this.token = null;
     this.debug = false;
 
-    this.$get = [
-      '$injector',
-      function($injector) {
-        return {
-          token: this.token,
-          debug: this.debug
-        }
+    this.$get = ['$injector', function($injector) {
+      return {
+        token: this.token,
+        debug: this.debug
       }
-    ];
+    }]
   });
 
   /**
    * Interceptor for requests that sets the Authorization header
    */
-  angular.module('sis.api').factory('authInterceptor', ['$q', 'sisConfiguration', function($q,
-    sisConfiguration) {
+  angular.module('sis.api').factory('authInterceptor', ['$q', 'sisConfiguration', function($q, sisConfiguration) {
     return {
       request: function(config) {
         config.headers = config.headers || {};
@@ -86,7 +82,8 @@
   /**
    * Configuration for the sis.modules module
    */
-  angular.module('sis.modules').config(['$sceDelegateProvider', '$compileProvider', 'path', function($sceDelegateProvider, $compileProvider, path) {
+  angular.module('sis.modules').config(['$sceDelegateProvider', '$compileProvider', 'path', function($sceDelegateProvider, $compileProvider,
+    path) {
     // Allow to load remote directives
     $sceDelegateProvider.resourceUrlWhitelist([
       'self',
@@ -178,7 +175,6 @@
           service = $injector.get(service_name),
           call_params = _.omit(topic, 'service');
 
-        // TODO: Handle failed responses
         switch(method) {
           case _this.GET:
             // TODO: Call query or get depending on the response (array or not)
@@ -653,6 +649,10 @@
       id: '@id',
       controller: '@controller',
       verb: '@verb'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   }]);
 })(window.angular);
@@ -689,13 +689,15 @@
    * Provider for orchestrating the modules inserted on the page
    */
   angular.module('sis.modules').provider('sisViews', function() {
-    this.$get = ['$injector', '$q', '$log', '$compile', '$rootScope', 'FacilitiesService', 'LayoutsService', 'ViewsService', 'path', function($injector, $q, $log, $compile, $rootScope, FacilitiesService, LayoutsService, ViewsService, path) {
+    this.$get = ['$injector', '$q', '$log', '$compile', '$rootScope', 'FacilitiesService', 'LayoutsService', 'ViewsService', 'path', function($injector, $q, $log, $compile, $rootScope,
+      FacilitiesService, LayoutsService, ViewsService, path) {
       var _this = this;
 
       /**
        * Search for the view
        */
       var _load = function(options, callback) {
+        // TODO: Use dataStore instead of the services directly
         FacilitiesService.query({
           id: options.id,
           controller: 'views',
@@ -725,7 +727,9 @@
                   var module = _.findWhere(modules, {placeholder: placeholder.id});
 
                   if (module) {
-                    var module_element = $compile('<' + module.slug + ' class="module" data-id="' + module.id + '">')($rootScope);
+                    var module_markup = '<' + module.slug + ' class="module" data-id="' +
+                                        module.id + '">';
+                        module_element = $compile(module_markup)($rootScope);
 
                     angular.element(placeholder).append(module_element);
                   }
@@ -759,8 +763,8 @@
    *  - /v1/views/1/modules
    *  - /v1/views?organization_id=1
    */
-  angular.module('sis.api').factory('ViewsService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
+  angular.module('sis.api').factory('ViewsService', ['$resource', 'url', 'version', function($resource, url,
+    version) {
     return $resource(url + version + '/views/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',

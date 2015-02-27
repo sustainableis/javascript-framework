@@ -1,6 +1,6 @@
 {
   "name": "sis-framework",
-  "version": "0.0.13-alpha",
+  "version": "0.0.14-alpha",
   "main": "dist/sis-framework.js",
   "private": true,
   "homepage": "https://github.com/sustainableis/javascript-framework",
