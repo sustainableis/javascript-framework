@@ -5,6 +5,12 @@
     'ngResource'
   ]);
 
+  angular.module('sis.api', ['sis']);
+  angular.module('sis.modules', ['sis']);
+
+  angular.module('sis.api').constant('url', 'http://api.sustainableis.com/');
+  angular.module('sis.api').constant('version', 'v1');
+
   /**
    * Provider for configuration of the sis module
    */
@@ -21,12 +27,6 @@
       }
     }
   });
-
-  angular.module('sis.api', ['sis']);
-  angular.module('sis.modules', ['sis']);
-
-  angular.module('sis.api').constant('url', 'http://api.sustainableis.com/');
-  angular.module('sis.api').constant('version', 'v1');
 
   /**
    * Interceptor for requests that sets the Authorization header
@@ -57,10 +57,20 @@
   });
 
   /**
+   * Configuration for the sis module
+   */
+  angular.module('sis').config(function($logProvider, sisConfigurationProvider) {
+    // Must delay because the sisConfigurationProvider has to be set
+    // TODO: Find a better way
+    setTimeout(function() {
+      $logProvider.debugEnabled(sisConfigurationProvider.debug || false);
+    });
+  });
+
+  /**
    * Configuration for the sis.api module
    */
-  angular.module('sis.api').config(function($httpProvider, $logProvider,
-    sisConfigurationProvider) {
+  angular.module('sis.api').config(function($httpProvider) {
     $httpProvider.defaults.headers.post['Content-Type'] =
       'application/x-www-form-urlencoded; charset=UTF-8;';
     $httpProvider.defaults.headers.put['Content-Type'] =
@@ -70,12 +80,6 @@
     // delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
     $httpProvider.interceptors.push('authInterceptor');
-
-    // Must delay because the sisConfigurationProvider has to be set
-    // TODO: Find a better way
-    setTimeout(function() {
-      $logProvider.debugEnabled(sisConfigurationProvider.debug || false);
-    });
   });
 
   /**
