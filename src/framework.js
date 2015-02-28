@@ -10,28 +10,14 @@
 
   angular.module('sis.api').constant('url', 'http://api.sustainableis.com/');
   angular.module('sis.api').constant('version', 'v1');
-
-  /**
-   * Provider for configuration of the sis module
-   */
-  angular.module('sis').provider('sisConfiguration', function() {
-    this.token = null;
-    this.debug = false;
-    this.path = null;
-
-    this.$get = function($injector) {
-      return {
-        token: this.token,
-        debug: this.debug,
-        path: this.path
-      }
-    }
+  angular.module('sis.api').value('auth', {
+    token: null
   });
 
   /**
    * Interceptor for requests that sets the Authorization header
    */
-  angular.module('sis.api').factory('authInterceptor', function($q, sisConfiguration) {
+  angular.module('sis.api').factory('authInterceptor', function($q, auth) {
     return {
       request: function(config) {
         config.headers = config.headers || {};
@@ -40,8 +26,8 @@
           config.data = $.param(config.data);
         }
 
-        if (sisConfiguration.token) {
-          config.headers.Authorization = 'Bearer ' + sisConfiguration.token;
+        if (auth.token) {
+          config.headers.Authorization = 'Bearer ' + auth.token;
         }
 
         return config;
@@ -54,17 +40,6 @@
         return response || $q.when(response);
       }
     }
-  });
-
-  /**
-   * Configuration for the sis module
-   */
-  angular.module('sis').config(function($logProvider, sisConfigurationProvider) {
-    // Must delay because the sisConfigurationProvider has to be set
-    // TODO: Find a better way
-    setTimeout(function() {
-      $logProvider.debugEnabled(sisConfigurationProvider.debug || false);
-    });
   });
 
   /**
@@ -86,15 +61,14 @@
    * Configuration for the sis.modules module
    */
   angular.module('sis.modules').config(function($sceDelegateProvider,
-    $compileProvider, sisConfigurationProvider) {
+    $compileProvider, sisModulesProvider) {
 
-    // Must delay because the sisConfigurationProvider has to be set
-    // TODO: Find a better way
+    // TODO: Find a better way. Must delay because the sisModulesProvider has to be set
     setTimeout(function() {
       // Allow to load remote directives
       $sceDelegateProvider.resourceUrlWhitelist([
         'self',
-        sisConfigurationProvider.path + '**'
+        sisModulesProvider.path + '**'
       ]);
     });
 

@@ -3,11 +3,11 @@
    * Provider for orchestrating the modules inserted on the page
    */
   angular.module('sis.modules').provider('sisModules', function() {
-    this.modules = [];
+    this.path = null;
 
-    this.$get = function($injector, $q, $log, $rootScope, $compile, dataStore,
-      sisConfiguration) {
-      var _this = this;
+    this.$get = function($injector, $q, $log, $rootScope, $compile, dataStore) {
+      var _this = this,
+          _modules = [];
 
       /**
        * Builds an internal list with modules embedded on the page and loads
@@ -24,17 +24,17 @@
               script = document.createElement('script'),
               link = document.createElement('link');
 
-          _this.modules.push({
+          _modules.push({
             id: id,
             tag: tag
           });
 
           angular.element(module).remove();
 
-          script.src = sisConfiguration.path + tag + '/' + tag + '.js';
+          script.src = _this.path + tag + '/' + tag + '.js';
 
           link.rel = 'stylesheet';
-          link.href = sisConfiguration.path + tag + '/' + tag + '.css';
+          link.href = _this.path + tag + '/' + tag + '.css';
 
           var load = $q(function(resolve, reject) {
             script.onload = function() {
@@ -64,7 +64,7 @@
         var calls = [];
 
         // Get the channels for each module and send them to the module
-        _.each(_this.modules, function(module) {
+        _.each(_modules, function(module) {
           var call = $q(function(resolve, reject) {
             dataStore.get('service:modules/id:' + module.id + '/controller:channels',
               function(data, error) {
@@ -159,9 +159,9 @@
        */
       var _destroy = function() {
         // Remove script tags for the modules
-        _.each(_this.modules, function(module) {
-          var src = sisConfiguration.path + module.tag + '/' + module.tag + '.js',
-              href = sisConfiguration.path + module.tag + '/' + module.tag + '.css',
+        _.each(_modules, function(module) {
+          var src = _this.path + module.tag + '/' + module.tag + '.js',
+              href = _this.path + module.tag + '/' + module.tag + '.css',
               scripts = angular.element('head').find('script'),
               links = angular.element('head').find('link');
 
@@ -189,13 +189,14 @@
         events.purge();
 
         // Reset the modules list
-        _this.modules = [];
+        _modules = [];
       }
 
       return {
         discover: _discover,
         init: _init,
-        destroy: _destroy
+        destroy: _destroy,
+        path: this.path
       }
     }
   });
