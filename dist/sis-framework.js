@@ -82,8 +82,8 @@
   /**
    * Configuration for the sis.modules module
    */
-  angular.module('sis.modules').config(['$sceDelegateProvider', '$compileProvider', 'path', function($sceDelegateProvider, $compileProvider,
-    path) {
+  angular.module('sis.modules').config(['$sceDelegateProvider', '$compileProvider', 'path', function($sceDelegateProvider,
+    $compileProvider, path) {
     // Allow to load remote directives
     $sceDelegateProvider.resourceUrlWhitelist([
       'self',
@@ -91,7 +91,7 @@
     ]);
 
     // Allow to add directives after bootstraping
-    angular.module('sis.modules').compileProvider = $compileProvider;
+    angular.module('sis.modules')._directive = $compileProvider.directive;
   }]);
 })(window.angular);
 (function(angular) {
@@ -126,6 +126,8 @@
     this.cache = {};
     this.GET = 0;
     this.POST = 1;
+    this.PUT = 2;
+    this.DELETE = 3;
 
     this.$get = ['$injector', '$log', 'OauthService', 'FacilitiesService', 'OrganizationsService', 'BuildingsService', 'FeedsService', 'OutputsService', 'UsersService', 'WeatherService', function($injector, $log, OauthService, FacilitiesService,
       OrganizationsService, BuildingsService, FeedsService, OutputsService,
@@ -197,8 +199,32 @@
             });
           break;
 
+          case _this.PUT:
+            if (!_.has(service, 'update')) {
+              return callback(null, service_name + 'has not method update');
+            }
+
+            service.update(call_params, payload,
+            function(data) {
+              callback(data);
+            },
+            function(error) {
+              callback(null, error);
+            });
+          break;
+
+          case _this.DELETE:
+            service.delete(call_params,
+            function(data) {
+              callback(data);
+            },
+            function(error) {
+              callback(null, error);
+            });
+          break;
+
           default:
-            $log.error('Invalid method', method, 'for calling', topic);
+            callback(null, 'Invalid method', method, 'for calling', topic);
         }
       }
 
@@ -225,7 +251,7 @@
       }
 
       /**
-       * Send data for a topic to the API
+       * Post data for a topic to the API
        *
        * @param {string} topic
        * @param {object} payload
@@ -239,9 +265,40 @@
         });
       }
 
+      /**
+       * Put data for a topic to the API
+       *
+       * @param {string} topic
+       * @param {object} payload
+       * @param {function} callback
+       */
+      var _put = function(topic, payload, callback) {
+        _call(_this.PUT, topic, payload, function(data, error) {
+          $log.debug('Returned', data, 'from API', 'for topic', topic);
+
+          callback(data, error);
+        });
+      }
+
+      /**
+       * Delete data for a topic to the API
+       *
+       * @param {string} topic
+       * @param {function} callback
+       */
+      var _delete = function(topic, callback) {
+        _call(_this.DELETE, topic, function(data, error) {
+          $log.debug('Returned', data, 'from API', 'for topic', topic);
+
+          callback(data, error);
+        });
+      }
+
       return {
         get: _get,
-        post: _post
+        post: _post,
+        put: _put,
+        'delete': _delete
       }
     }]
   });
@@ -389,7 +446,8 @@
   angular.module('sis.modules').provider('sisModules', function() {
     this.modules = [];
 
-    this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', 'dataStore', 'path', function($injector, $q, $log, $rootScope, $compile, dataStore, path) {
+    this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', 'dataStore', 'path', function($injector, $q, $log, $rootScope, $compile, dataStore,
+      path) {
       var _this = this;
 
       /**
@@ -457,7 +515,8 @@
                 // Send data from channels defined by the module
                 _.each(data, function(channel) {
                   dataStore.get(channel.topic, function(_data, _error) {
-                    $log.debug('Framework sent', _data, 'on', module.id + ':' + channel.route);
+                    $log.debug('Framework sent', _data, 'on', module.id + ':' +
+                      channel.route);
 
                     events.publish(module.id + ':' + channel.route, {
                       data: _data,
@@ -490,6 +549,32 @@
           $log.debug('Framework got', data, 'on', 'post');
 
           dataStore.post(data.topic, data.payload, function(_data, error) {
+            $log.debug('Framework sent', _data, 'on', data.caller);
+
+            events.publish(data.caller, {
+              data: _data,
+              error: error
+            });
+          });
+        });
+
+        events.subscribe('put', function(data) {
+          $log.debug('Framework got', data, 'on', 'post');
+
+          dataStore.put(data.topic, data.payload, function(_data, error) {
+            $log.debug('Framework sent', _data, 'on', data.caller);
+
+            events.publish(data.caller, {
+              data: _data,
+              error: error
+            });
+          });
+        });
+
+        events.subscribe('delete', function(data) {
+          $log.debug('Framework got', data, 'on', 'post');
+
+          dataStore.delete(data.topic, function(_data, error) {
             $log.debug('Framework sent', _data, 'on', data.caller);
 
             events.publish(data.caller, {
