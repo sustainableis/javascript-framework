@@ -2,32 +2,31 @@
 
 (function(angular) {
   angular.module('sis', [
-    'ngResource',
-    'sis.api',
-    'sis.modules'
+    'ngResource'
   ]);
 
-  angular.module('sis.api', []);
-  angular.module('sis.modules', []);
-
-  angular.module('sis.api').constant('url', 'http://api.sustainableis.com/');
-  angular.module('sis.api').constant('version', 'v1');
-  angular.module('sis.modules').constant('path', 'http://d10t57k8pf74ki.cloudfront.net/');
-
   /**
-   * Provider for configuration of the sis.api module
+   * Provider for configuration of the sis module
    */
   angular.module('sis.api').provider('sisConfiguration', function() {
     this.token = null;
     this.debug = false;
+    this.path = null;
 
     this.$get = ['$injector', function($injector) {
       return {
         token: this.token,
-        debug: this.debug
+        debug: this.debug,
+        path: this.path
       }
     }]
   });
+
+  angular.module('sis.api', ['sis']);
+  angular.module('sis.modules', ['sis']);
+
+  angular.module('sis.api').constant('url', 'http://api.sustainableis.com/');
+  angular.module('sis.api').constant('version', 'v1');
 
   /**
    * Interceptor for requests that sets the Authorization header
@@ -82,13 +81,18 @@
   /**
    * Configuration for the sis.modules module
    */
-  angular.module('sis.modules').config(['$sceDelegateProvider', '$compileProvider', 'path', function($sceDelegateProvider,
-    $compileProvider, path) {
-    // Allow to load remote directives
-    $sceDelegateProvider.resourceUrlWhitelist([
-      'self',
-      path + '**'
-    ]);
+  angular.module('sis.modules').config(['$sceDelegateProvider', '$compileProvider', 'sisConfigurationProvider', function($sceDelegateProvider,
+    $compileProvider, sisConfigurationProvider) {
+
+    // Must delay because the sisConfigurationProvider has to be set
+    // TODO: Find a better way
+    setTimeout(function() {
+      // Allow to load remote directives
+      $sceDelegateProvider.resourceUrlWhitelist([
+        'self',
+        sisConfigurationProvider.path + '**'
+      ]);
+    });
 
     // Allow to add directives after bootstraping
     angular.module('sis.modules')._directive = $compileProvider.directive;
@@ -446,8 +450,8 @@
   angular.module('sis.modules').provider('sisModules', function() {
     this.modules = [];
 
-    this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', 'dataStore', 'path', function($injector, $q, $log, $rootScope, $compile, dataStore,
-      path) {
+    this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', 'dataStore', 'sisConfiguration', function($injector, $q, $log, $rootScope, $compile, dataStore,
+      sisConfiguration) {
       var _this = this;
 
       /**
@@ -471,7 +475,7 @@
 
           angular.element(module).remove();
 
-          script.src = path + tag + '/' + tag + '.js';
+          script.src = sisConfiguration.path + tag + '/' + tag + '.js';
 
           var load = $q(function(resolve, reject) {
             script.onload = function() {
@@ -596,7 +600,7 @@
       var _destroy = function() {
         // Remove script tags for the modules
         _.each(_this.modules, function(module) {
-          var src = path + module.tag + '/' + module.tag + '.js',
+          var src = sisConfiguration.path + module.tag + '/' + module.tag + '.js',
               scripts = angular.element('head').find('script');
 
           _.each(scripts, function(script) {
@@ -771,11 +775,11 @@
 })(window.angular);
 (function(angular, events, _, $) {
   /**
-   * Provider for orchestrating the modules inserted on the page
+   * Provider for orchestrating the views inserted on the page
    */
   angular.module('sis.modules').provider('sisViews', function() {
-    this.$get = ['$injector', '$q', '$log', '$compile', '$rootScope', 'FacilitiesService', 'LayoutsService', 'ViewsService', 'path', function($injector, $q, $log, $compile, $rootScope,
-      FacilitiesService, LayoutsService, ViewsService, path) {
+    this.$get = ['$injector', '$q', '$log', '$compile', '$rootScope', 'FacilitiesService', 'LayoutsService', 'ViewsService', 'sisConfiguration', function($injector, $q, $log, $compile, $rootScope,
+      FacilitiesService, LayoutsService, ViewsService, sisConfiguration) {
       var _this = this;
 
       /**
@@ -797,7 +801,7 @@
           }, function(layout) {
             $log.debug(layout);
 
-            $rootScope.tpl = path + layout.slug + '/' + layout.slug + '.html';
+            $rootScope.tpl = sisConfiguration.path + layout.slug + '/' + layout.slug + '.html';
 
             $rootScope.$on('$includeContentLoaded', function() {
               var placeholders = $('.placeholder');
