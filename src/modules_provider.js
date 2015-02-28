@@ -21,7 +21,8 @@
           var id = angular.element(module).data('id'),
               parent = angular.element(module).parent(),
               tag = angular.element(module).prop('tagName').toLowerCase(),
-              script = document.createElement('script');
+              script = document.createElement('script'),
+              link = document.createElement('link');
 
           _this.modules.push({
             id: id,
@@ -31,6 +32,9 @@
           angular.element(module).remove();
 
           script.src = sisConfiguration.path + tag + '/' + tag + '.js';
+
+          link.rel = 'stylesheet';
+          link.href = sisConfiguration.path + tag + '/' + tag + '.css';
 
           var load = $q(function(resolve, reject) {
             script.onload = function() {
@@ -45,6 +49,7 @@
           loads.push(load);
 
           document.getElementsByTagName('head')[0].appendChild(script);
+          document.getElementsByTagName('head')[0].appendChild(link);
         });
 
         $q.all(loads).then(function() {
@@ -156,11 +161,19 @@
         // Remove script tags for the modules
         _.each(_this.modules, function(module) {
           var src = sisConfiguration.path + module.tag + '/' + module.tag + '.js',
-              scripts = angular.element('head').find('script');
+              href = sisConfiguration.path + module.tag + '/' + module.tag + '.css',
+              scripts = angular.element('head').find('script'),
+              links = angular.element('head').find('link');
 
           _.each(scripts, function(script) {
             if (script.src === src) {
               angular.element(script).remove();
+            }
+          });
+
+          _.each(links, function(link) {
+            if (link.href === href) {
+              angular.element(link).remove();
             }
           });
         });
