@@ -1,6 +1,6 @@
 'use strict';
 
-(function(angular) {
+(function(angular, _) {
   angular.module('sis', [
     'ngResource'
   ]);
@@ -72,10 +72,33 @@
       ]);
     });
 
-    // Allow to add directives after bootstraping
-    angular.module('sis.modules')._directive = $compileProvider.directive;
+    /**
+     * Wrapper over AngularJS directive
+     *  - Allows for directives to be added after Angular is bootstrapped
+     *  - Defines a default configuration object which can be extended by the
+     *    module
+     */
+    angular.module('sis.modules')._directive = function(name, conf) {
+      $compileProvider.directive(name, function(sisModules) {
+        var configuration = conf(),
+            default_configuration = {
+              restrict: 'E',
+              templateUrl: function(element, attrs) {
+                var tag = angular.element(element).prop('tagName').toLowerCase();
+
+                return sisModules.path + tag + '-' + attrs.version + '.html';
+              },
+              scope: {
+                id: '@id',
+                version: '@version'
+              }
+            };
+
+        return _.extend(configuration, default_configuration);
+      });
+    }
   }]);
-})(window.angular);
+})(window.angular, window._);
 (function(angular) {
   /**
    * Resource for retrieving Buildings
