@@ -441,23 +441,25 @@
             loads = [];
 
         _.each(modules, function(module) {
-          var id = angular.element(module).data('id'),
-              parent = angular.element(module).parent(),
+          var parent = angular.element(module).parent(),
+              id = angular.element(module).data('id'),
+              version = angular.element(module).data('version'),
               tag = angular.element(module).prop('tagName').toLowerCase(),
               script = document.createElement('script'),
               link = document.createElement('link');
 
           _modules.push({
             id: id,
-            tag: tag
+            tag: tag,
+            version: version
           });
 
           angular.element(module).remove();
 
-          script.src = _this.path + tag + '/' + tag + '.js';
+          script.src = _this.path + tag + '-' + version + '.js';
 
           link.rel = 'stylesheet';
-          link.href = _this.path + tag + '/' + tag + '.css';
+          link.href = _this.path + tag + '-' + version + '.css';
 
           var load = $q(function(resolve, reject) {
             script.onload = function() {
@@ -583,8 +585,8 @@
       var _destroy = function() {
         // Remove script tags for the modules
         _.each(_modules, function(module) {
-          var src = _this.path + module.tag + '/' + module.tag + '.js',
-              href = _this.path + module.tag + '/' + module.tag + '.css',
+          var src = _this.path + module.tag + '-' + module.version + '.js',
+              href = _this.path + module.tag + '-' + module.version + '.css',
               scripts = angular.element('head').find('script'),
               links = angular.element('head').find('link');
 
