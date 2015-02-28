@@ -6,6 +6,8 @@
     this.cache = {};
     this.GET = 0;
     this.POST = 1;
+    this.PUT = 2;
+    this.DELETE = 3;
 
     this.$get = function($injector, $log, OauthService, FacilitiesService,
       OrganizationsService, BuildingsService, FeedsService, OutputsService,
@@ -77,8 +79,32 @@
             });
           break;
 
+          case _this.PUT:
+            if (!_.has(service, 'update')) {
+              return callback(null, service_name + 'has not method update');
+            }
+
+            service.update(call_params, payload,
+            function(data) {
+              callback(data);
+            },
+            function(error) {
+              callback(null, error);
+            });
+          break;
+
+          case _this.DELETE:
+            service.delete(call_params,
+            function(data) {
+              callback(data);
+            },
+            function(error) {
+              callback(null, error);
+            });
+          break;
+
           default:
-            $log.error('Invalid method', method, 'for calling', topic);
+            callback(null, 'Invalid method', method, 'for calling', topic);
         }
       }
 
@@ -105,7 +131,7 @@
       }
 
       /**
-       * Send data for a topic to the API
+       * Post data for a topic to the API
        *
        * @param {string} topic
        * @param {object} payload
@@ -119,9 +145,40 @@
         });
       }
 
+      /**
+       * Put data for a topic to the API
+       *
+       * @param {string} topic
+       * @param {object} payload
+       * @param {function} callback
+       */
+      var _put = function(topic, payload, callback) {
+        _call(_this.PUT, topic, payload, function(data, error) {
+          $log.debug('Returned', data, 'from API', 'for topic', topic);
+
+          callback(data, error);
+        });
+      }
+
+      /**
+       * Delete data for a topic to the API
+       *
+       * @param {string} topic
+       * @param {function} callback
+       */
+      var _delete = function(topic, callback) {
+        _call(_this.DELETE, topic, function(data, error) {
+          $log.debug('Returned', data, 'from API', 'for topic', topic);
+
+          callback(data, error);
+        });
+      }
+
       return {
         get: _get,
-        post: _post
+        post: _post,
+        put: _put,
+        'delete': _delete
       }
     }
   });
