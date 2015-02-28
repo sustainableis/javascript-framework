@@ -8,7 +8,7 @@
   /**
    * Provider for configuration of the sis module
    */
-  angular.module('sis.api').provider('sisConfiguration', function() {
+  angular.module('sis').provider('sisConfiguration', function() {
     this.token = null;
     this.debug = false;
     this.path = null;
