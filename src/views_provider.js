@@ -1,10 +1,10 @@
 (function(angular, events, _, $) {
   /**
-   * Provider for orchestrating the modules inserted on the page
+   * Provider for orchestrating the views inserted on the page
    */
   angular.module('sis.modules').provider('sisViews', function() {
     this.$get = function($injector, $q, $log, $compile, $rootScope,
-      FacilitiesService, LayoutsService, ViewsService, path) {
+      FacilitiesService, LayoutsService, ViewsService, sisConfiguration) {
       var _this = this;
 
       /**
@@ -26,7 +26,7 @@
           }, function(layout) {
             $log.debug(layout);
 
-            $rootScope.tpl = path + layout.slug + '/' + layout.slug + '.html';
+            $rootScope.tpl = sisConfiguration.path + layout.slug + '/' + layout.slug + '.html';
 
             $rootScope.$on('$includeContentLoaded', function() {
               var placeholders = $('.placeholder');

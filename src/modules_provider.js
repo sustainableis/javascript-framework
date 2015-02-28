@@ -6,7 +6,7 @@
     this.modules = [];
 
     this.$get = function($injector, $q, $log, $rootScope, $compile, dataStore,
-      path) {
+      sisConfiguration) {
       var _this = this;
 
       /**
@@ -30,7 +30,7 @@
 
           angular.element(module).remove();
 
-          script.src = path + tag + '/' + tag + '.js';
+          script.src = sisConfiguration.path + tag + '/' + tag + '.js';
 
           var load = $q(function(resolve, reject) {
             script.onload = function() {
@@ -155,7 +155,7 @@
       var _destroy = function() {
         // Remove script tags for the modules
         _.each(_this.modules, function(module) {
-          var src = path + module.tag + '/' + module.tag + '.js',
+          var src = sisConfiguration.path + module.tag + '/' + module.tag + '.js',
               scripts = angular.element('head').find('script');
 
           _.each(scripts, function(script) {
