@@ -454,7 +454,7 @@
        * Builds an internal list with modules embedded on the page and loads
        * script files
        */
-      var _discover = function() {
+      var _discover = function(callback) {
         var modules = angular.element('.module'),
             loads = [];
 
