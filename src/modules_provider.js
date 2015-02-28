@@ -5,7 +5,8 @@
   angular.module('sis.modules').provider('sisModules', function() {
     this.modules = [];
 
-    this.$get = function($injector, $q, $log, $rootScope, $compile, dataStore, path) {
+    this.$get = function($injector, $q, $log, $rootScope, $compile, dataStore,
+      path) {
       var _this = this;
 
       /**
@@ -73,7 +74,8 @@
                 // Send data from channels defined by the module
                 _.each(data, function(channel) {
                   dataStore.get(channel.topic, function(_data, _error) {
-                    $log.debug('Framework sent', _data, 'on', module.id + ':' + channel.route);
+                    $log.debug('Framework sent', _data, 'on', module.id + ':' +
+                      channel.route);
 
                     events.publish(module.id + ':' + channel.route, {
                       data: _data,
@@ -106,6 +108,32 @@
           $log.debug('Framework got', data, 'on', 'post');
 
           dataStore.post(data.topic, data.payload, function(_data, error) {
+            $log.debug('Framework sent', _data, 'on', data.caller);
+
+            events.publish(data.caller, {
+              data: _data,
+              error: error
+            });
+          });
+        });
+
+        events.subscribe('put', function(data) {
+          $log.debug('Framework got', data, 'on', 'post');
+
+          dataStore.put(data.topic, data.payload, function(_data, error) {
+            $log.debug('Framework sent', _data, 'on', data.caller);
+
+            events.publish(data.caller, {
+              data: _data,
+              error: error
+            });
+          });
+        });
+
+        events.subscribe('delete', function(data) {
+          $log.debug('Framework got', data, 'on', 'post');
+
+          dataStore.delete(data.topic, function(_data, error) {
             $log.debug('Framework sent', _data, 'on', data.caller);
 
             events.publish(data.caller, {
