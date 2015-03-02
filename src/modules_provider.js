@@ -183,7 +183,7 @@
         /*
           TODO: Review this process
           For pages with multiple views and each view has modules instantiated,
-          clearing all the events listeners and reseting the modules list might
+          clearing all the events listeners and resetting the modules list might
           cause issues. The destroy event is triggered when a view is destroyed.
          */
 
