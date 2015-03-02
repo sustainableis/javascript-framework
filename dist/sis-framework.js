@@ -10,14 +10,12 @@
 
   angular.module('sis.api').constant('url', 'http://api.sustainableis.com/');
   angular.module('sis.api').constant('version', 'v1');
-  angular.module('sis.api').value('auth', {
-    token: null
-  });
+  angular.module('sis.api').value('sisToken', {});
 
   /**
    * Interceptor for requests that sets the Authorization header
    */
-  angular.module('sis.api').factory('authInterceptor', ['$q', 'auth', function($q, auth) {
+  angular.module('sis.api').factory('authInterceptor', ['$q', 'sisToken', function($q, sisToken) {
     return {
       request: function(config) {
         config.headers = config.headers || {};
@@ -26,8 +24,8 @@
           config.data = $.param(config.data);
         }
 
-        if (auth.token) {
-          config.headers.Authorization = 'Bearer ' + auth.token;
+        if (sisToken.access_token) {
+          config.headers.Authorization = 'Bearer ' + sisToken.access_token;
         }
 
         return config;
@@ -629,7 +627,7 @@
         /*
           TODO: Review this process
           For pages with multiple views and each view has modules instantiated,
-          clearing all the events listeners and reseting the modules list might
+          clearing all the events listeners and resetting the modules list might
           cause issues. The destroy event is triggered when a view is destroyed.
          */
 
