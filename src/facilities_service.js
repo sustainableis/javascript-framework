@@ -23,6 +23,10 @@
       controller: '@controller',
       verb: '@verb',
       action: '@action'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   });
 })(window.angular);

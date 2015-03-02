@@ -16,6 +16,10 @@
       id: '@id',
       controller: '@controller',
       verb: '@verb'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   });
 })(window.angular);

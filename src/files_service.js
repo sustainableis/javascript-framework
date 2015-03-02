@@ -15,6 +15,10 @@
     return $resource(url + version + '/files/:id/:verb', {
       id: '@id',
       verb: '@verb'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   });
 })(window.angular);
