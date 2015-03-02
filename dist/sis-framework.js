@@ -118,6 +118,10 @@
       id: '@id',
       controller: '@controller',
       verb: '@verb'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   }]);
 })(window.angular);
@@ -373,6 +377,10 @@
       controller: '@controller',
       verb: '@verb',
       action: '@action'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   }]);
 })(window.angular);
@@ -398,6 +406,10 @@
       id: '@id',
       controller: '@controller',
       verb: '@verb'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   }]);
 })(window.angular);
@@ -418,6 +430,10 @@
     return $resource(url + version + '/files/:id/:verb', {
       id: '@id',
       verb: '@verb'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   }]);
 })(window.angular);
@@ -439,6 +455,10 @@
       id: '@id',
       controller: '@controller',
       verb: '@verb'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   }]);
 })(window.angular);
@@ -668,6 +688,10 @@
       controller: '@controller',
       verb: '@verb',
       action: '@action'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   }]);
 })(window.angular);
@@ -706,6 +730,10 @@
       id: '@id',
       controller: '@controller',
       verb: '@verb'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   }]);
 })(window.angular);
@@ -730,6 +758,10 @@
       id: '@id',
       controller: '@controller',
       verb: '@verb'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   }]);
 })(window.angular);
@@ -874,6 +906,10 @@
       controller: '@controller',
       verb: '@verb',
       action: '@action'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   }]);
 })(window.angular);
@@ -897,6 +933,10 @@
       id: '@id',
       controller: '@controller',
       verb: '@verb'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
     });
   }]);
 })(window.angular);
