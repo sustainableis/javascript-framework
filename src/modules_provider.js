@@ -33,10 +33,10 @@
 
           angular.element(module).remove();
 
-          script.src = _this.path + tag + '-' + version + '.js';
+          script.src = _this.path + tag + '/' + version + '/' + tag + '.min.js';
 
           link.rel = 'stylesheet';
-          link.href = _this.path + tag + '-' + version + '.css';
+          link.href = _this.path + tag + '/' + version + '/' + tag + '.min.css';
 
           var load = $q(function(resolve, reject) {
             script.onload = function() {
@@ -162,8 +162,8 @@
       var _destroy = function() {
         // Remove script tags for the modules
         _.each(_modules, function(module) {
-          var src = _this.path + module.tag + '-' + module.version + '.js',
-              href = _this.path + module.tag + '-' + module.version + '.css',
+          var src = _this.path + module.tag + '/' + module.version + '/' + module.tag + '.min.js',
+              href = _this.path + module.tag + '/' + module.version + '/' + module.tag + '.min.css',
               scripts = angular.element('head').find('script'),
               links = angular.element('head').find('link');
 
