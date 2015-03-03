@@ -12,6 +12,8 @@ npm install -g grunt-cli
 
 ## Build
 ```bash
+grunt jshint:dist
+grunt ngAnnotate:dist
 grunt concat:dist
 grunt uglify:dist
 ```
@@ -26,11 +28,20 @@ grunt
 To be added.
 
 ## Development
-Include as bower package into an application:
+Include as bower package into an application.
+* latest released version:
 ```javascript
 {
     "dependencies": {
         "sis-framework": "git@github.com:sustainableis/javascript-framework.git"
+    }
+}
+```
+* latest commit on master:
+```javascript
+{
+    "dependencies": {
+        "sis-framework": "git@github.com:sustainableis/javascript-framework.git#master"
     }
 }
 ```
