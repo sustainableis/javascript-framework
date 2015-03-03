@@ -8,6 +8,6 @@
     "angular-route": "~1.2.21",
     "angular-resource": "~1.2.21",
     "underscore": "~1.7.0",
-    "sis-framework": "git@github.com:sustainableis/javascript-framework.git"
+    "sis-framework": "git@github.com:sustainableis/javascript-framework.git#master"
   }
 }

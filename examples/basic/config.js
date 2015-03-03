@@ -4,7 +4,7 @@ angular.module('sisdemo').config([
     '$routeProvider',
     '$locationProvider',
     'sisConfigurationProvider',
-    function($routeProvider, $locationProvider, sisConfigurationProvider) {
+    function($routeProvider, $locationProvider, $logProvider, sisModulesProvider) {
         $routeProvider
             .when('/', {
                 templateUrl: 'main.html',
@@ -17,7 +17,8 @@ angular.module('sisdemo').config([
         $locationProvider.hashPrefix('!');
         $locationProvider.html5Mode(false);
 
-        sisConfigurationProvider.token = '6c6eaed5f5361173c408c9dbdf49b3aa9221f846';
-        sisConfigurationProvider.debug = true;
+        $logProvider.debugEnabled(true);
+
+        sisModulesProvider.path = 'http://d10t57k8pf74ki.cloudfront.net/dist/';
     }
 ]);
