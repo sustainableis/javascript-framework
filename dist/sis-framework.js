@@ -1,5 +1,3 @@
-'use strict';
-
 (function(angular, _) {
   angular.module('sis', [
     'ngResource'
@@ -37,7 +35,7 @@
 
         return response || $q.when(response);
       }
-    }
+    };
   }]);
 
   /**
@@ -94,9 +92,10 @@
 
         return _.extend(configuration, default_configuration);
       });
-    }
+    };
   }]);
 })(window.angular, window._);
+
 (function(angular) {
   /**
    * Resource for retrieving Buildings
@@ -125,6 +124,7 @@
     });
   }]);
 })(window.angular);
+
 (function(angular, _) {
   /**
    * Provider for managing API calls
@@ -166,7 +166,7 @@
         });
 
         return decoded;
-      }
+      };
 
       /**
        * Call a service based on the encoded topic. It's safe to
@@ -178,11 +178,11 @@
        * @param {function} callback
        */
       var _call = function(method, topic, payload, callback) {
-        var topic = _decode_topic(topic),
-          service_name = topic.service.charAt(0).toUpperCase() +
-          topic.service.slice(1) + 'Service',
+        var decoded_topic = _decode_topic(topic),
+          service_name = decoded_topic.service.charAt(0).toUpperCase() +
+          decoded_topic.service.slice(1) + 'Service',
           service = $injector.get(service_name),
-          call_params = _.omit(topic, 'service');
+          call_params = _.omit(decoded_topic, 'service');
 
         switch(method) {
           case _this.GET:
@@ -233,7 +233,7 @@
           default:
             callback(null, 'Invalid method', method, 'for calling', topic);
         }
-      }
+      };
 
       /**
        * Get data for a topic from cache or the API
@@ -255,7 +255,7 @@
 
           callback(data, error);
         });
-      }
+      };
 
       /**
        * Post data for a topic to the API
@@ -270,7 +270,7 @@
 
           callback(data, error);
         });
-      }
+      };
 
       /**
        * Put data for a topic to the API
@@ -285,7 +285,7 @@
 
           callback(data, error);
         });
-      }
+      };
 
       /**
        * Delete data for a topic to the API
@@ -299,17 +299,18 @@
 
           callback(data, error);
         });
-      }
+      };
 
       return {
         get: _get,
         post: _post,
         put: _put,
         'delete': _delete
-      }
-    }]
+      };
+    }];
   });
 })(window.angular, window._);
+
 (function() {
   var topics = {};
 
@@ -317,31 +318,31 @@
     if (!topics[topic]) {
       topics[topic] = {
         queue: []
-      }
+      };
     }
 
     topics[topic].queue.push(listener);
-  }
+  };
 
   var _unsubscribe = function(index) {
     delete topics[topic].queue[index];
-  }
+  };
 
   var _publish = function(topic, message) {
-    var message = message || {};
+    var _message = message || {};
 
     if (!topics[topic] || !topics[topic].queue.length) {
       return;
     }
 
     topics[topic].queue.forEach(function(listener) {
-      listener(message);
+      listener(_message);
     });
-  }
+  };
 
   var _purge = function() {
     topics = {};
-  }
+  };
 
   window.events = {
     subscribe: _subscribe,
@@ -384,6 +385,7 @@
     });
   }]);
 })(window.angular);
+
 (function(angular) {
   /**
    * Resource for retrieving Feeds
@@ -413,6 +415,7 @@
     });
   }]);
 })(window.angular);
+
 (function(angular) {
   /**
    * Resource for retrieving Files
@@ -437,6 +440,7 @@
     });
   }]);
 })(window.angular);
+
 (function(angular) {
   /**
    * Resource for retrieving Layouts
@@ -462,6 +466,7 @@
     });
   }]);
 })(window.angular);
+
 (function(angular, events, _, $) {
   /**
    * Provider for orchestrating the modules inserted on the page
@@ -509,7 +514,7 @@
               parent.append(new_module);
 
               resolve();
-            }
+            };
           });
 
           loads.push(load);
@@ -521,7 +526,7 @@
         $q.all(loads).then(function() {
           callback();
         });
-      }
+      };
 
       /**
        * Initialize the modules
@@ -617,7 +622,7 @@
         $q.all(calls).then(function() {
           callback();
         });
-      }
+      };
 
       /*
        * Destroy the modules on the page when a view that has modules
@@ -656,17 +661,18 @@
 
         // Reset the modules list
         _modules = [];
-      }
+      };
 
       return {
         discover: _discover,
         init: _init,
         destroy: _destroy,
         path: this.path
-      }
-    }]
+      };
+    }];
   });
 })(window.angular, window.events, window._, window.$);
+
 (function(angular) {
   /**
    * Resource for retrieving Modules
@@ -695,6 +701,7 @@
     });
   }]);
 })(window.angular);
+
 (function(angular) {
   /**
    * Resource for authorization using Oauth2
@@ -710,6 +717,7 @@
     });
   }]);
 })(window.angular);
+
 (function(angular) {
   /**
    * Resource for retrieving Organizations
@@ -737,6 +745,7 @@
     });
   }]);
 })(window.angular);
+
 (function(angular) {
   /**
    * Resource for retrieving Outputs
@@ -765,6 +774,7 @@
     });
   }]);
 })(window.angular);
+
 (function(angular) {
   /**
    * Resource for retrieving Users
@@ -792,6 +802,7 @@
     });
   }]);
 })(window.angular);
+
 (function(angular) {
   /**
    * Resource for retrieving Utilities
@@ -820,6 +831,7 @@
     });
   }]);
 })(window.angular);
+
 (function(angular, events, _, $) {
   /**
    * Provider for orchestrating the views inserted on the page
@@ -876,14 +888,15 @@
             });
           });
         });
-      }
+      };
 
       return {
         load: _load,
-      }
-    }]
+      };
+    }];
   });
 })(window.angular, window.events, window._, window.$);
+
 (function(angular) {
   /**
    * Resource for retrieving Views
@@ -913,6 +926,7 @@
     });
   }]);
 })(window.angular);
+
 (function(angular) {
   /**
    * Resource for retrieving Weather
