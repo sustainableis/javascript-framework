@@ -5,31 +5,31 @@
     if (!topics[topic]) {
       topics[topic] = {
         queue: []
-      }
+      };
     }
 
     topics[topic].queue.push(listener);
-  }
+  };
 
   var _unsubscribe = function(index) {
     delete topics[topic].queue[index];
-  }
+  };
 
   var _publish = function(topic, message) {
-    var message = message || {};
+    var _message = message || {};
 
     if (!topics[topic] || !topics[topic].queue.length) {
       return;
     }
 
     topics[topic].queue.forEach(function(listener) {
-      listener(message);
+      listener(_message);
     });
-  }
+  };
 
   var _purge = function() {
     topics = {};
-  }
+  };
 
   window.events = {
     subscribe: _subscribe,

@@ -39,7 +39,7 @@
         });
 
         return decoded;
-      }
+      };
 
       /**
        * Call a service based on the encoded topic. It's safe to
@@ -51,11 +51,11 @@
        * @param {function} callback
        */
       var _call = function(method, topic, payload, callback) {
-        var topic = _decode_topic(topic),
-          service_name = topic.service.charAt(0).toUpperCase() +
-          topic.service.slice(1) + 'Service',
+        var decoded_topic = _decode_topic(topic),
+          service_name = decoded_topic.service.charAt(0).toUpperCase() +
+          decoded_topic.service.slice(1) + 'Service',
           service = $injector.get(service_name),
-          call_params = _.omit(topic, 'service');
+          call_params = _.omit(decoded_topic, 'service');
 
         switch(method) {
           case _this.GET:
@@ -106,7 +106,7 @@
           default:
             callback(null, 'Invalid method', method, 'for calling', topic);
         }
-      }
+      };
 
       /**
        * Get data for a topic from cache or the API
@@ -128,7 +128,7 @@
 
           callback(data, error);
         });
-      }
+      };
 
       /**
        * Post data for a topic to the API
@@ -143,7 +143,7 @@
 
           callback(data, error);
         });
-      }
+      };
 
       /**
        * Put data for a topic to the API
@@ -158,7 +158,7 @@
 
           callback(data, error);
         });
-      }
+      };
 
       /**
        * Delete data for a topic to the API
@@ -172,14 +172,14 @@
 
           callback(data, error);
         });
-      }
+      };
 
       return {
         get: _get,
         post: _post,
         put: _put,
         'delete': _delete
-      }
-    }
+      };
+    };
   });
 })(window.angular, window._);

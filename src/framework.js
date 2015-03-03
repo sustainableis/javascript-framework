@@ -1,5 +1,3 @@
-'use strict';
-
 (function(angular, _) {
   angular.module('sis', [
     'ngResource'
@@ -37,7 +35,7 @@
 
         return response || $q.when(response);
       }
-    }
+    };
   });
 
   /**
@@ -94,6 +92,6 @@
 
         return _.extend(configuration, default_configuration);
       });
-    }
+    };
   });
 })(window.angular, window._);

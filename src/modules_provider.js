@@ -45,7 +45,7 @@
               parent.append(new_module);
 
               resolve();
-            }
+            };
           });
 
           loads.push(load);
@@ -57,7 +57,7 @@
         $q.all(loads).then(function() {
           callback();
         });
-      }
+      };
 
       /**
        * Initialize the modules
@@ -153,7 +153,7 @@
         $q.all(calls).then(function() {
           callback();
         });
-      }
+      };
 
       /*
        * Destroy the modules on the page when a view that has modules
@@ -192,14 +192,14 @@
 
         // Reset the modules list
         _modules = [];
-      }
+      };
 
       return {
         discover: _discover,
         init: _init,
         destroy: _destroy,
         path: this.path
-      }
-    }
+      };
+    };
   });
 })(window.angular, window.events, window._, window.$);

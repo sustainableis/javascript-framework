@@ -54,11 +54,11 @@
             });
           });
         });
-      }
+      };
 
       return {
         load: _load,
-      }
-    }
+      };
+    };
   });
 })(window.angular, window.events, window._, window.$);
