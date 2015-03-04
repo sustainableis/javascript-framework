@@ -315,27 +315,27 @@
   var topics = {};
 
   var _subscribe = function(topic, listener) {
-    if (!topics[topic]) {
-      topics[topic] = {
-        queue: []
-      };
+    if (!topics.hasOwnProperty(topic)) {
+      topics[topic] = [];
     }
 
-    topics[topic].queue.push(listener);
-  };
+    var index = topics[topic].push(listener) - 1;
 
-  var _unsubscribe = function(index) {
-    delete topics[topic].queue[index];
+    return {
+      remove: function() {
+        delete topics[topic][index];
+      }
+    };
   };
 
   var _publish = function(topic, message) {
-    var _message = message || {};
-
-    if (!topics[topic] || !topics[topic].queue.length) {
+    if (!topics.hasOwnProperty(topic)) {
       return;
     }
 
-    topics[topic].queue.forEach(function(listener) {
+    var _message = message || {};
+
+    topics[topic].forEach(function(listener) {
       listener(_message);
     });
   };
@@ -346,7 +346,6 @@
 
   window.events = {
     subscribe: _subscribe,
-    unsubscribe: _unsubscribe,
     publish: _publish,
     purge: _purge,
     topics: topics
@@ -474,7 +473,8 @@
   angular.module('sis.modules').provider('sisModules', function() {
     this.path = null;
 
-    this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', 'dataStore', function($injector, $q, $log, $rootScope, $compile, dataStore) {
+    this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', '$timeout', 'dataStore', function($injector, $q, $log, $rootScope, $compile, $timeout,
+      dataStore) {
       var _this = this,
           _modules = [];
 
@@ -500,8 +500,6 @@
             version: version
           });
 
-          angular.element(module).remove();
-
           script.src = _this.path + tag + '/' + version + '/' + tag + '.min.js';
 
           link.rel = 'stylesheet';
@@ -509,9 +507,7 @@
 
           var load = $q(function(resolve, reject) {
             script.onload = function() {
-              var new_module = $compile(module)($rootScope);
-
-              parent.append(new_module);
+              $compile(module)($rootScope);
 
               resolve();
             };
@@ -524,7 +520,9 @@
         });
 
         $q.all(loads).then(function() {
-          callback();
+          // Allow modules to properly initialize before sending data
+
+          $timeout(callback);
         });
       };
 
@@ -565,6 +563,10 @@
           });
 
           calls.push(call);
+        });
+
+        $q.all(calls).then(function() {
+          callback();
         });
 
         events.subscribe('get', function(data) {
@@ -617,10 +619,6 @@
               error: error
             });
           });
-        });
-
-        $q.all(calls).then(function() {
-          callback();
         });
       };
 
