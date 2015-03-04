@@ -2,27 +2,27 @@
   var topics = {};
 
   var _subscribe = function(topic, listener) {
-    if (!topics[topic]) {
-      topics[topic] = {
-        queue: []
-      };
+    if (!topics.hasOwnProperty(topic)) {
+      topics[topic] = [];
     }
 
-    topics[topic].queue.push(listener);
-  };
+    var index = topics[topic].push(listener) - 1;
 
-  var _unsubscribe = function(index) {
-    delete topics[topic].queue[index];
+    return {
+      remove: function() {
+        delete topics[topic][index];
+      }
+    };
   };
 
   var _publish = function(topic, message) {
-    var _message = message || {};
-
-    if (!topics[topic] || !topics[topic].queue.length) {
+    if (!topics.hasOwnProperty(topic)) {
       return;
     }
 
-    topics[topic].queue.forEach(function(listener) {
+    var _message = message || {};
+
+    topics[topic].forEach(function(listener) {
       listener(_message);
     });
   };
@@ -33,7 +33,6 @@
 
   window.events = {
     subscribe: _subscribe,
-    unsubscribe: _unsubscribe,
     publish: _publish,
     purge: _purge,
     topics: topics
