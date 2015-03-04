@@ -5,7 +5,8 @@
   angular.module('sis.modules').provider('sisModules', function() {
     this.path = null;
 
-    this.$get = function($injector, $q, $log, $rootScope, $compile, dataStore) {
+    this.$get = function($injector, $q, $log, $rootScope, $compile, $timeout,
+      dataStore) {
       var _this = this,
           _modules = [];
 
@@ -31,8 +32,6 @@
             version: version
           });
 
-          angular.element(module).remove();
-
           script.src = _this.path + tag + '/' + version + '/' + tag + '.min.js';
 
           link.rel = 'stylesheet';
@@ -40,9 +39,7 @@
 
           var load = $q(function(resolve, reject) {
             script.onload = function() {
-              var new_module = $compile(module)($rootScope);
-
-              parent.append(new_module);
+              $compile(module)($rootScope);
 
               resolve();
             };
@@ -55,7 +52,9 @@
         });
 
         $q.all(loads).then(function() {
-          callback();
+          // Allow modules to properly initialize before sending data
+
+          $timeout(callback);
         });
       };
 
@@ -96,6 +95,10 @@
           });
 
           calls.push(call);
+        });
+
+        $q.all(calls).then(function() {
+          callback();
         });
 
         events.subscribe('get', function(data) {
@@ -148,10 +151,6 @@
               error: error
             });
           });
-        });
-
-        $q.all(calls).then(function() {
-          callback();
         });
       };
 
