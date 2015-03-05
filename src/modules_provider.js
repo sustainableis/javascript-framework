@@ -8,7 +8,7 @@
     this.$get = function($injector, $q, $log, $rootScope, $compile, $timeout,
       dataStore) {
       var _this = this,
-          _modules = [];
+        _modules = [];
 
       /**
        * Builds an internal list with modules embedded on the page and loads
@@ -16,15 +16,15 @@
        */
       var _discover = function(callback) {
         var modules = angular.element('.module'),
-            loads = [];
+          loads = [];
 
         _.each(modules, function(module) {
           var parent = angular.element(module).parent(),
-              id = angular.element(module).data('id'),
-              version = angular.element(module).data('version'),
-              tag = angular.element(module).prop('tagName').toLowerCase(),
-              script = document.createElement('script'),
-              link = document.createElement('link');
+            id = angular.element(module).data('id'),
+            version = angular.element(module).data('version'),
+            tag = angular.element(module).prop('tagName').toLowerCase(),
+            script = document.createElement('script'),
+            link = document.createElement('link');
 
           _modules.push({
             id: id,
@@ -91,7 +91,7 @@
                 });
 
                 resolve();
-            });
+              });
           });
 
           calls.push(call);
@@ -162,9 +162,9 @@
         // Remove script tags for the modules
         _.each(_modules, function(module) {
           var src = _this.path + module.tag + '/' + module.version + '/' + module.tag + '.min.js',
-              href = _this.path + module.tag + '/' + module.version + '/' + module.tag + '.min.css',
-              scripts = angular.element('head').find('script'),
-              links = angular.element('head').find('link');
+            href = _this.path + module.tag + '/' + module.version + '/' + module.tag + '.min.css',
+            scripts = angular.element('head').find('script'),
+            links = angular.element('head').find('link');
 
           _.each(scripts, function(script) {
             if (script.src === src) {
@@ -193,10 +193,40 @@
         _modules = [];
       };
 
+      var _append = function(options) {
+        var append_deferred = $q.defer();
+
+        var container_selector = options.container;
+        var module_id = options.id;
+        var module_slug = options.slug;
+        var module_version = options.version;
+        var transclude = options.transclude;
+        var scope = options.scope;
+
+        var container_elem = $($(container_selector)[0]);
+
+        var module_elem = $compile(
+          '<' +
+          module_slug +
+          ' data-id="' +
+          module_id +
+          '" data-version="' +
+          module_version +
+          '" class="module">',
+
+          transclude)(scope);
+
+        container_elem.append(module_elem);
+        append_deferred.resolve();
+
+        return append_deferred.promise;
+      };
+
       return {
         discover: _discover,
         init: _init,
         destroy: _destroy,
+        append: _append,
         path: this.path
       };
     };
