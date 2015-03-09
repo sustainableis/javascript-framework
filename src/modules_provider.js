@@ -26,30 +26,35 @@
             script = document.createElement('script'),
             link = document.createElement('link');
 
-          _modules.push({
+          var _module = {
             id: id,
             tag: tag,
             version: version
-          });
+          };
 
-          script.src = _this.path + tag + '/' + version + '/' + tag + '.min.js';
+          if (!_.some(_modules, _module)) {
+            _modules.push(_module);
+            script.src = _this.path + tag + '/' + version + '/' + tag + '.min.js';
 
-          link.rel = 'stylesheet';
-          link.href = _this.path + tag + '/' + version + '/' + tag + '.min.css';
+            link.rel = 'stylesheet';
+            link.href = _this.path + tag + '/' + version + '/' + tag + '.min.css';
 
-          var load = $q(function(resolve, reject) {
-            script.onload = function() {
-              $compile(module)($rootScope);
+            var load = $q(function(resolve, reject) {
+              script.onload = function() {
+                $compile(module)($rootScope);
 
-              resolve();
-            };
-          });
+                resolve();
+              };
+            });
 
-          loads.push(load);
+            loads.push(load);
 
-          document.getElementsByTagName('head')[0].appendChild(script);
-          document.getElementsByTagName('head')[0].appendChild(link);
+            document.getElementsByTagName('head')[0].appendChild(script);
+            document.getElementsByTagName('head')[0].appendChild(link);
+          }
         });
+
+        console.log(_modules);
 
         $q.all(loads).then(function() {
           // Allow modules to properly initialize before sending data
