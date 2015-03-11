@@ -89,7 +89,7 @@
               templateUrl: function(element, attrs) {
                 var tag = angular.element(element).prop('tagName').toLowerCase();
 
-                return sisModules.path + tag + '/' + attrs.version + '/' + tag + '.min.html';
+                return sisModules.path + '/dist/' + tag + '/' + attrs.version + '/' + tag + '.min.html';
               },
               scope: {
                 id: '@id',

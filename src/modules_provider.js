@@ -37,16 +37,16 @@
             serie: true,
             files: [
               // Preload the html template
-              _this.path + tag + '/' + version + '/' + tag + '.min.html',
-              _this.path + tag + '/' + version + '/' + tag + '.min.js',
-              _this.path + tag + '/' + version + '/' + tag + '.min.css'
+              _this.path + '/dist/' + tag + '/' + version + '/' + tag + '.min.html',
+              _this.path + '/dist/' + tag + '/' + version + '/' + tag + '.min.js',
+              _this.path + '/dist/' + tag + '/' + version + '/' + tag + '.min.css'
             ]
           });
 
           loads.push(load);
 
           $rootScope.$on('ocLazyLoad.fileLoaded', function(e, file) {
-            if (file === _this.path + tag + '/' + version + '/' + tag + '.min.js') {
+            if (file === _this.path + '/dist/' + tag + '/' + version + '/' + tag + '.min.js') {
               $compile(module)($rootScope);
             }
           });
