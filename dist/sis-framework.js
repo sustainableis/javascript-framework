@@ -1,6 +1,7 @@
 (function(angular, _) {
   angular.module('sis', [
-    'ngResource'
+    'ngResource',
+    'oc.lazyLoad'
   ]);
 
   angular.module('sis.api', ['sis']);
@@ -56,8 +57,8 @@
   /**
    * Configuration for the sis.modules module
    */
-  angular.module('sis.modules').config(['$sceDelegateProvider', '$compileProvider', 'sisModulesProvider', function($sceDelegateProvider,
-    $compileProvider, sisModulesProvider) {
+  angular.module('sis.modules').config(['$sceDelegateProvider', '$compileProvider', '$ocLazyLoadProvider', 'sisModulesProvider', function($sceDelegateProvider,
+    $compileProvider, $ocLazyLoadProvider, sisModulesProvider) {
 
     // TODO: Find a better way. Must delay because the sisModulesProvider has to be set
     setTimeout(function() {
@@ -68,6 +69,11 @@
       ]);
     });
 
+    $ocLazyLoadProvider.config({
+      debug: true,
+      events: true
+    });
+
     /**
      * Wrapper over AngularJS directive
      *  - Allows for directives to be added after Angular is bootstrapped
@@ -75,9 +81,9 @@
      *    module
      */
     angular.module('sis.modules')._directive = function(name, conf) {
-      $compileProvider.directive(name, ['sisModules',
-        function(sisModules) {
-          var configuration = conf(),
+      $compileProvider.directive(name, ['sisModules', '$ocLazyLoad',
+        function(sisModules, $ocLazyLoad) {
+          var configuration = conf(sisModules, $ocLazyLoad),
             default_configuration = {
               restrict: 'E',
               templateUrl: function(element, attrs) {
@@ -554,8 +560,8 @@
   angular.module('sis.modules').provider('sisModules', function() {
     this.path = null;
 
-    this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', '$timeout', 'dataStore', function($injector, $q, $log, $rootScope, $compile, $timeout,
-      dataStore) {
+    this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', '$timeout', '$ocLazyLoad', 'dataStore', function($injector, $q, $log, $rootScope, $compile, $timeout,
+      $ocLazyLoad, dataStore) {
       var _this = this,
         _modules = [];
 
@@ -571,9 +577,7 @@
           var parent = angular.element(module).parent(),
             id = angular.element(module).data('id'),
             version = angular.element(module).data('version'),
-            tag = angular.element(module).prop('tagName').toLowerCase(),
-            script = document.createElement('script'),
-            link = document.createElement('link');
+            tag = angular.element(module).prop('tagName').toLowerCase();
 
           var _module = {
             id: id,
@@ -581,35 +585,29 @@
             version: version
           };
 
-          if (!_.some(_modules, _module)) {
-            _modules.push(_module);
-            script.src = _this.path + tag + '/' + version + '/' + tag + '.min.js';
+          _modules.push(_module);
 
-            link.rel = 'stylesheet';
-            link.href = _this.path + tag + '/' + version + '/' + tag + '.min.css';
+          var load = $ocLazyLoad.load({
+            // TODO: Set serie to false after some more tests
+            serie: true,
+            files: [
+              // Preload the html template
+              _this.path + tag + '/' + version + '/' + tag + '.min.html',
+              _this.path + tag + '/' + version + '/' + tag + '.min.js',
+              _this.path + tag + '/' + version + '/' + tag + '.min.css'
+            ]
+          });
 
-            var load = $q(function(resolve, reject) {
-              script.onload = function() {
-                $compile(module)($rootScope);
+          loads.push(load);
 
-                resolve();
-              };
-            });
-
-            loads.push(load);
-
-            document.getElementsByTagName('head')[0].appendChild(script);
-            document.getElementsByTagName('head')[0].appendChild(link);
-          }
+          $rootScope.$on('ocLazyLoad.fileLoaded', function(e, file) {
+            if (file === _this.path + tag + '/' + version + '/' + tag + '.min.js') {
+              $compile(module)($rootScope);
+            }
+          });
         });
 
-        console.log(_modules);
-
-        $q.all(loads).then(function() {
-          // Allow modules to properly initialize before sending data
-
-          $timeout(callback);
-        });
+        $q.all(loads).then(callback);
       };
 
       /**
@@ -651,9 +649,7 @@
           calls.push(call);
         });
 
-        $q.all(calls).then(function() {
-          callback();
-        });
+        $q.all(calls).then(callback);
 
         events.subscribe('get', function(data) {
           $log.debug('Framework got', data, 'on', 'get');
@@ -713,26 +709,6 @@
        * instantiated is destroyed
        */
       var _destroy = function() {
-        // Remove script tags for the modules
-        _.each(_modules, function(module) {
-          var src = _this.path + module.tag + '/' + module.version + '/' + module.tag + '.min.js',
-            href = _this.path + module.tag + '/' + module.version + '/' + module.tag + '.min.css',
-            scripts = angular.element('head').find('script'),
-            links = angular.element('head').find('link');
-
-          _.each(scripts, function(script) {
-            if (script.src === src) {
-              angular.element(script).remove();
-            }
-          });
-
-          _.each(links, function(link) {
-            if (link.href === href) {
-              angular.element(link).remove();
-            }
-          });
-        });
-
         /*
           TODO: Review this process
           For pages with multiple views and each view has modules instantiated,
