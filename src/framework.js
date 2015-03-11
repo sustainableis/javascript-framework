@@ -1,6 +1,7 @@
 (function(angular, _) {
   angular.module('sis', [
-    'ngResource'
+    'ngResource',
+    'oc.lazyLoad'
   ]);
 
   angular.module('sis.api', ['sis']);
@@ -57,7 +58,7 @@
    * Configuration for the sis.modules module
    */
   angular.module('sis.modules').config(function($sceDelegateProvider,
-    $compileProvider, sisModulesProvider) {
+    $compileProvider, $ocLazyLoadProvider, sisModulesProvider) {
 
     // TODO: Find a better way. Must delay because the sisModulesProvider has to be set
     setTimeout(function() {
@@ -68,6 +69,11 @@
       ]);
     });
 
+    $ocLazyLoadProvider.config({
+      debug: true,
+      events: true
+    });
+
     /**
      * Wrapper over AngularJS directive
      *  - Allows for directives to be added after Angular is bootstrapped
@@ -75,9 +81,9 @@
      *    module
      */
     angular.module('sis.modules')._directive = function(name, conf) {
-      $compileProvider.directive(name, ['sisModules',
-        function(sisModules) {
-          var configuration = conf(),
+      $compileProvider.directive(name, ['sisModules', '$ocLazyLoad',
+        function(sisModules, $ocLazyLoad) {
+          var configuration = conf(sisModules, $ocLazyLoad),
             default_configuration = {
               restrict: 'E',
               templateUrl: function(element, attrs) {
