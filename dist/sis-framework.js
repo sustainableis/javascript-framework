@@ -75,8 +75,9 @@
      *    module
      */
     angular.module('sis.modules')._directive = function(name, conf) {
-      $compileProvider.directive(name, function(sisModules) {
-        var configuration = conf(),
+      $compileProvider.directive(name, ['sisModules',
+        function(sisModules) {
+          var configuration = conf(),
             default_configuration = {
               restrict: 'E',
               templateUrl: function(element, attrs) {
@@ -90,8 +91,9 @@
               }
             };
 
-        return _.extend(configuration, default_configuration);
-      });
+          return _.extend(configuration, default_configuration);
+        }
+      ]);
     };
   }]);
 })(window.angular, window._);
