@@ -1,12 +1,13 @@
 {
   "name": "sis-framework",
-  "version": "0.1.0-beta",
-  "main": "dist/sis-framework.js",
+  "version": "0.1.1-beta",
+  "main": "dist/sis-framework.min.js",
   "private": true,
   "homepage": "https://github.com/sustainableis/javascript-framework",
-  "description": "SIS Framework",
+  "description": "SIS Javascript Framework",
   "ignore": [
     "**/.*",
+    "src",
     "node_modules",
     "bower_components"
   ],
