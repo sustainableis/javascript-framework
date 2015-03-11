@@ -65,7 +65,7 @@
       // Allow to load remote directives
       $sceDelegateProvider.resourceUrlWhitelist([
         'self',
-        sisModulesProvider.path + '**'
+        sisModulesProvider.path + '/**'
       ]);
     });
 
