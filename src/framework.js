@@ -81,15 +81,15 @@
      *    module
      */
     angular.module('sis.modules')._directive = function(name, conf) {
-      $compileProvider.directive(name, ['sisModules', '$ocLazyLoad',
-        function(sisModules, $ocLazyLoad) {
-          var configuration = conf(sisModules, $ocLazyLoad),
+      $compileProvider.directive(name, ['$injector', '$ocLazyLoad',
+        function($injector, $ocLazyLoad) {
+          var configuration = conf($injector, $ocLazyLoad),
             default_configuration = {
               restrict: 'E',
               templateUrl: function(element, attrs) {
                 var tag = angular.element(element).prop('tagName').toLowerCase();
 
-                return sisModules.path + '/dist/' + tag + '/' + attrs.version + '/' + tag + '.min.html';
+                return sisModulesProvider.path + '/dist/' + tag + '/' + attrs.version + '/' + tag + '.min.html';
               },
               scope: {
                 id: '@id',
