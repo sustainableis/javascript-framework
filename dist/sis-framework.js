@@ -983,7 +983,8 @@
           }, function(layout) {
             $log.debug(layout);
 
-            $rootScope.tpl = sisModules.path + layout.slug + '/' + layout.slug + '.html';
+            $rootScope.tpl = sisModules.path + '/dist/' + layout.slug + '/' +
+              layout.version + '/' + layout.slug + '.min.html';
 
             $rootScope.$on('$includeContentLoaded', function() {
               var placeholders = $('.placeholder');
@@ -995,12 +996,15 @@
                 $log.debug(modules);
 
                 _.each(placeholders, function(placeholder) {
-                  var module = _.findWhere(modules, {placeholder: placeholder.id});
+                  var module = _.findWhere(modules, {
+                    placeholder: placeholder.id
+                  });
 
                   if (module) {
                     var module_markup = '<' + module.slug + ' class="module" data-id="' +
-                                        module.id + '">';
-                        module_element = $compile(module_markup)($rootScope);
+                      module.id + '" data-version="' + module.version + '">';
+
+                    module_element = $compile(module_markup)($rootScope);
 
                     angular.element(placeholder).append(module_element);
                   }
