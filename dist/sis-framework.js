@@ -111,6 +111,7 @@
    * @param {number|string} id
    * @param {string} controller
    * @param {string} verb
+   * @param {string} action
    *
    * Endpoints example:
    *  - /v1/buildings
@@ -118,13 +119,16 @@
    *  - /v1/buildings/1/outputs
    *  - /v1/buildings/1/outputs?category=demand_usage
    *  - /v1/buildings?facility_id=1
+   *  - /v1/buildings/1/mapping/areas
+   *  - /v1/buildings/1/outputs/mapping/geometry
    */
   angular.module('sis.api').factory('BuildingsService', ['$resource', 'url', 'version', function($resource,
     url, version) {
-    return $resource(url + version + '/buildings/:id/:controller/:verb', {
+    return $resource(url + version + '/buildings/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
-      verb: '@verb'
+      verb: '@verb',
+      action: '@action'
     }, {
       'update': {
         method: 'PUT'
@@ -209,6 +213,8 @@
                     callback(data);
                   },
                   function(error) {
+                    $log.error(error);
+
                     callback(null, error);
                   });
               } else {
@@ -217,6 +223,8 @@
                     callback(data);
                   },
                   function(error) {
+                    $log.error(error);
+
                     callback(null, error);
                   });
               }
@@ -228,6 +236,8 @@
                   callback(data);
                 },
                 function(error) {
+                  $log.error(error);
+
                   callback(null, error);
                 });
               break;
@@ -242,6 +252,8 @@
                   callback(data);
                 },
                 function(error) {
+                  $log.error(error);
+
                   callback(null, error);
                 });
               break;
@@ -252,6 +264,8 @@
                   callback(data);
                 },
                 function(error) {
+                  $log.error(error);
+
                   callback(null, error);
                 });
               break;
@@ -562,95 +576,9 @@
 
     this.$get = ['$injector', '$q', '$log', '$rootScope', '$compile', '$timeout', '$ocLazyLoad', 'dataStore', function($injector, $q, $log, $rootScope, $compile, $timeout,
       $ocLazyLoad, dataStore) {
-      var _this = this,
-        _modules = [];
+      var _this = this;
 
-      /**
-       * Builds an internal list with modules embedded on the page and loads
-       * script files
-       */
-      var _discover = function(callback) {
-        var modules = angular.element('.module'),
-          loads = [];
-
-        _.each(modules, function(module) {
-          var parent = angular.element(module).parent(),
-            id = angular.element(module).data('id'),
-            version = angular.element(module).data('version'),
-            tag = angular.element(module).prop('tagName').toLowerCase();
-
-          var _module = {
-            id: id,
-            tag: tag,
-            version: version
-          };
-
-          _modules.push(_module);
-
-          var load = $ocLazyLoad.load({
-            // TODO: Set serie to false after some more tests
-            serie: true,
-            files: [
-              // Preload the html template
-              _this.path + '/dist/' + tag + '/' + version + '/' + tag + '.min.html',
-              _this.path + '/dist/' + tag + '/' + version + '/' + tag + '.min.js',
-              _this.path + '/dist/' + tag + '/' + version + '/' + tag + '.min.css'
-            ]
-          });
-
-          loads.push(load);
-
-          $rootScope.$on('ocLazyLoad.fileLoaded', function(e, file) {
-            if (file === _this.path + '/dist/' + tag + '/' + version + '/' + tag + '.min.js') {
-              $compile(module)($rootScope);
-            }
-          });
-        });
-
-        $q.all(loads).then(callback);
-      };
-
-      /**
-       * Initialize the modules
-       */
-      var _init = function(callback) {
-        var calls = [];
-
-        // Get the channels for each module and send them to the module
-        _.each(_modules, function(module) {
-          var call = $q(function(resolve, reject) {
-            dataStore.get('service:modules/id:' + module.id + '/controller:channels',
-              function(data, error) {
-                if (error) {
-                  return reject();
-                }
-
-                $log.debug('Framework sent', data, 'on', module.id + ':channels');
-
-                events.publish(module.id + ':channels', data);
-
-                // Send data from channels defined by the module
-                _.each(data, function(channel) {
-                  dataStore.get(channel.topic, function(_data, _error) {
-                    $log.debug('Framework sent', _data, 'on', module.id + ':' +
-                      channel.route);
-
-                    events.publish(module.id + ':' + channel.route, {
-                      data: _data,
-                      error: _error
-                    });
-                  });
-                });
-
-                resolve();
-              });
-          });
-
-          calls.push(call);
-        });
-
-        $q.all(calls).then(callback);
-
+      var _init_reserved_channels = function() {
         events.subscribe('get', function(data) {
           $log.debug('Framework got', data, 'on', 'get');
 
@@ -704,6 +632,70 @@
         });
       };
 
+      var _send_channels_data = function(module_id) {
+        // Get modules channels
+        dataStore.get('service:modules/id:' + module_id + '/controller:channels',
+          function(channels, error) {
+            if (error) {
+              return;
+            }
+
+            // Send data for each channels on the specified route
+            _.each(channels, function(channel) {
+              dataStore.get(channel.topic, function(data, _error) {
+                $log.debug('Framework sent', data, 'on', module_id + ':' +
+                  channel.route);
+
+                events.publish(module_id + ':' + channel.route, {
+                  data: data,
+                  error: _error
+                });
+              });
+            });
+          }
+        );
+      };
+
+      /**
+       * Builds an internal list with modules embedded on the page and loads
+       * script files
+       */
+      var _init = function(callback) {
+        var modules = angular.element('.module'),
+          requests = [];
+
+        _init_reserved_channels();
+
+        _.each(modules, function(module) {
+          var id = angular.element(module).data('id'),
+            version = angular.element(module).data('version'),
+            tag = angular.element(module).prop('tagName').toLowerCase(),
+            path = _this.path + '/dist/' + tag + '/' + version + '/' + tag + '.min';
+
+          var request = $ocLazyLoad.load({
+            serie: true,
+            files: [
+              // Preload the html template
+              path + '.html',
+              path + '.js',
+              path + '.css'
+            ]
+          }).then(function() {
+            _send_channels_data(id);
+          });
+
+          requests.push(request);
+
+          $rootScope.$on('ocLazyLoad.fileLoaded', function(e, file) {
+            if (file === path + '.js') {
+              $compile(module)($rootScope);
+            }
+          });
+        });
+
+        $q.all(requests).then(callback);
+      };
+
       /*
        * Destroy the modules on the page when a view that has modules
        * instantiated is destroyed
@@ -718,9 +710,6 @@
 
         // Remove all events listeners
         events.purge();
-
-        // Reset the modules list
-        _modules = [];
       };
 
       var _append = function(options) {
@@ -753,7 +742,6 @@
       };
 
       return {
-        discover: _discover,
         init: _init,
         destroy: _destroy,
         append: _append,
