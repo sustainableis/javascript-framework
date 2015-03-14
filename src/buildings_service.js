@@ -5,6 +5,7 @@
    * @param {number|string} id
    * @param {string} controller
    * @param {string} verb
+   * @param {string} action
    *
    * Endpoints example:
    *  - /v1/buildings
