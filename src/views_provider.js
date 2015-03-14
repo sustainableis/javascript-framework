@@ -3,61 +3,51 @@
    * Provider for orchestrating the views inserted on the page
    */
   angular.module('sis.modules').provider('sisViews', function() {
-    this.$get = function($injector, $q, $log, $compile, $rootScope,
-      FacilitiesService, LayoutsService, ViewsService, sisModules) {
+    this.$get = function($log, $compile, $rootScope, dataStore, sisModules) {
       var _this = this;
 
       /**
        * Search for the view
        */
       var _load = function(options, callback) {
-        // TODO: Use dataStore instead of the services directly
-        FacilitiesService.query({
-          id: options.id,
-          controller: 'views',
-          slug: options.slug
-        }, function(views) {
-          $log.debug(views);
+        // TODO: Check if view for facilities, buildings, or organizations
+        dataStore.get('service:facilities/id:' + options.id +
+          '/controller:views/slug:' + options.slug,
+          function(views, error) {
+            // TODO: Make sure the first view is the right one
+            var view = views[0];
 
-          var view = views[0];
+            dataStore.get('@service:layouts/id:' + view.layout_id, function(layout, error) {
+              $rootScope.tpl = sisModules.path + '/dist/' + layout.slug + '/' +
+                layout.version + '/' + layout.slug + '.min.html';
 
-          LayoutsService.get({
-            id: view.layout_id
-          }, function(layout) {
-            $log.debug(layout);
+              $rootScope.$on('$includeContentLoaded', function() {
+                dataStore.get('service:views/id:' + view.id + '/controller:modules',
+                  function(modules, error) {
+                    var placeholders = $('.placeholder');
 
-            $rootScope.tpl = sisModules.path + '/dist/' + layout.slug + '/' +
-              layout.version + '/' + layout.slug + '.min.html';
+                    _.each(placeholders, function(placeholder) {
+                      var module = _.findWhere(modules, {
+                        placeholder: placeholder.id
+                      });
 
-            $rootScope.$on('$includeContentLoaded', function() {
-              var placeholders = $('.placeholder');
+                      if (module) {
+                        var module_markup = '<' + module.slug + ' class="module" data-id="' +
+                          module.id + '" data-version="' + module.version + '">';
 
-              ViewsService.query({
-                id: view.id,
-                controller: 'modules'
-              }, function(modules) {
-                $log.debug(modules);
+                        module_element = $compile(module_markup)($rootScope);
 
-                _.each(placeholders, function(placeholder) {
-                  var module = _.findWhere(modules, {
-                    placeholder: placeholder.id
-                  });
+                        angular.element(placeholder).append(module_element);
+                      }
+                    });
 
-                  if (module) {
-                    var module_markup = '<' + module.slug + ' class="module" data-id="' +
-                      module.id + '" data-version="' + module.version + '">';
-
-                    module_element = $compile(module_markup)($rootScope);
-
-                    angular.element(placeholder).append(module_element);
+                    callback();
                   }
-                });
-
-                callback();
+                );
               });
             });
-          });
-        });
+          }
+        );
       };
 
       return {
