@@ -74,6 +74,8 @@
                     callback(data);
                   },
                   function(error) {
+                    $log.error(error);
+
                     callback(null, error);
                   });
               } else {
@@ -82,6 +84,8 @@
                     callback(data);
                   },
                   function(error) {
+                    $log.error(error);
+
                     callback(null, error);
                   });
               }
@@ -93,6 +97,8 @@
                   callback(data);
                 },
                 function(error) {
+                  $log.error(error);
+
                   callback(null, error);
                 });
               break;
@@ -107,6 +113,8 @@
                   callback(data);
                 },
                 function(error) {
+                  $log.error(error);
+
                   callback(null, error);
                 });
               break;
@@ -117,6 +125,8 @@
                   callback(data);
                 },
                 function(error) {
+                  $log.error(error);
+
                   callback(null, error);
                 });
               break;
