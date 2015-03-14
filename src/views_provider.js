@@ -37,6 +37,7 @@
 
                         module_element = $compile(module_markup)($rootScope);
 
+                        angular.element(placeholder).empty();
                         angular.element(placeholder).append(module_element);
                       }
                     });
