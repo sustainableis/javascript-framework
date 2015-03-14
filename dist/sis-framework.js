@@ -139,15 +139,15 @@
      */
     angular.module('sis.modules').provider('dataStore', function() {
       this.cache = {};
-      this.GET = 0;
-      this.POST = 1;
-      this.PUT = 2;
-      this.DELETE = 3;
 
       this.$get = ['$injector', '$log', 'OauthService', 'FacilitiesService', 'OrganizationsService', 'BuildingsService', 'FeedsService', 'OutputsService', 'UsersService', 'WeatherService', function($injector, $log, OauthService, FacilitiesService,
         OrganizationsService, BuildingsService, FeedsService, OutputsService,
         UsersService, WeatherService) {
-        var _this = this;
+        var _this = this,
+          GET = 0,
+          POST = 1,
+          PUT = 2,
+          DELETE = 3;
 
         /**
          * Decode topic to object which can be passed to the service.
@@ -202,7 +202,7 @@
             call_params = _.omit(decoded_topic, ['service', 'is__object']);
 
           switch (method) {
-            case _this.GET:
+            case GET:
               if (_.has(decoded_topic, 'is__object')) {
                 service.get(call_params,
                   function(data) {
@@ -222,7 +222,7 @@
               }
               break;
 
-            case _this.POST:
+            case POST:
               service.save(call_params, payload,
                 function(data) {
                   callback(data);
@@ -232,7 +232,7 @@
                 });
               break;
 
-            case _this.PUT:
+            case PUT:
               if (!_.has(service, 'update')) {
                 return callback(null, service_name + 'has not method update');
               }
@@ -246,7 +246,7 @@
                 });
               break;
 
-            case _this.DELETE:
+            case DELETE:
               service.delete(call_params,
                 function(data) {
                   callback(data);
@@ -274,7 +274,7 @@
             return callback(_this.cache[topic]);
           }
 
-          _call(_this.GET, topic, null, function(data, error) {
+          _call(GET, topic, null, function(data, error) {
             $log.debug('Returned', data, 'from API', 'for topic', topic);
 
             _this.cache[topic] = data;
@@ -291,7 +291,7 @@
          * @param {function} callback
          */
         var _post = function(topic, payload, callback) {
-          _call(_this.POST, topic, payload, function(data, error) {
+          _call(POST, topic, payload, function(data, error) {
             $log.debug('Returned', data, 'from API', 'for topic', topic);
 
             callback(data, error);
@@ -306,7 +306,7 @@
          * @param {function} callback
          */
         var _put = function(topic, payload, callback) {
-          _call(_this.PUT, topic, payload, function(data, error) {
+          _call(PUT, topic, payload, function(data, error) {
             $log.debug('Returned', data, 'from API', 'for topic', topic);
 
             callback(data, error);
@@ -320,7 +320,7 @@
          * @param {function} callback
          */
         var _delete = function(topic, callback) {
-          _call(_this.DELETE, topic, function(data, error) {
+          _call(DELETE, topic, function(data, error) {
             $log.debug('Returned', data, 'from API', 'for topic', topic);
 
             callback(data, error);
