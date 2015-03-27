@@ -1027,7 +1027,8 @@
    * Provider for orchestrating the views inserted on the page
    */
   angular.module('sis.modules').provider('sisViews', function() {
-    this.$get = ['$log', '$compile', '$rootScope', 'dataStore', 'sisModules', function($log, $compile, $rootScope, dataStore, sisModules) {
+    this.$get = ['$log', '$compile', '$rootScope', '$ocLazyLoad', 'dataStore', 'sisModules', function($log, $compile, $rootScope, $ocLazyLoad, dataStore,
+      sisModules) {
       var _this = this;
 
       /**
@@ -1041,36 +1042,45 @@
             // TODO: Make sure the first view is the right one
             var view = views[0];
 
-            dataStore.get('@service:layouts/id:' + view.layout_id, function(layout, error) {
-              $rootScope.tpl = sisModules.path + '/dist/' + layout.slug + '/' +
-                layout.version + '/' + layout.slug + '.min.html';
+            dataStore.get('@service:layouts/id:' + view.layout_id,
+              function(layout, error) {
+                var path = sisModules.path + '/dist/' + layout.slug + '/' +
+                  layout.version + '/' + layout.slug + '.min';
 
-              $rootScope.$on('$includeContentLoaded', function() {
-                dataStore.get('service:views/id:' + view.id + '/controller:modules',
-                  function(modules, error) {
-                    var placeholders = $('.placeholder');
+                $rootScope.tpl = path + '.html';
 
-                    _.each(placeholders, function(placeholder) {
-                      var module = _.findWhere(modules, {
-                        placeholder: placeholder.id
+                ocLazyLoad.load({
+                  files: [
+                    path + '.css'
+                  ]
+                });
+
+                $rootScope.$on('$includeContentLoaded', function() {
+                  dataStore.get('service:views/id:' + view.id + '/controller:modules',
+                    function(modules, error) {
+                      var placeholders = $('.placeholder');
+
+                      _.each(placeholders, function(placeholder) {
+                        var module = _.findWhere(modules, {
+                          placeholder: placeholder.id
+                        });
+
+                        if (module) {
+                          var module_markup = '<' + module.slug + ' class="module" data-id="' +
+                            module.id + '" data-version="' + module.version + '">';
+
+                          module_element = $compile(module_markup)($rootScope);
+
+                          angular.element(placeholder).empty();
+                          angular.element(placeholder).append(module_element);
+                        }
                       });
 
-                      if (module) {
-                        var module_markup = '<' + module.slug + ' class="module" data-id="' +
-                          module.id + '" data-version="' + module.version + '">';
-
-                        module_element = $compile(module_markup)($rootScope);
-
-                        angular.element(placeholder).empty();
-                        angular.element(placeholder).append(module_element);
-                      }
-                    });
-
-                    callback();
-                  }
-                );
+                      callback();
+                    }
+                  );
+                });
               });
-            });
           }
         );
       };
