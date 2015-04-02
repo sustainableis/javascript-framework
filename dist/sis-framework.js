@@ -597,7 +597,7 @@
           console.log('MODULE', module);
           sisModules
             .append({
-              container: '.placeholder',
+              container: '#' + placeholder.id,
               slug: module.slug,
               id: module.id,
               version: '0.0.1',
@@ -617,6 +617,7 @@
     }];
   });
 })(window.angular, window._, window.$);
+
 (function(angular) {
   /**
    * Resource for retrieving Layouts
