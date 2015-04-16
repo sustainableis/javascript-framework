@@ -25,7 +25,7 @@
 
                 $rootScope.tpl = path + '.html';
 
-                ocLazyLoad.load({
+                $ocLazyLoad.load({
                   files: [
                     path + '.css'
                   ]
