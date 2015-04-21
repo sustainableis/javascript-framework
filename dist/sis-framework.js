@@ -773,6 +773,45 @@
         $q.all(requests).then(callback);
       };
 
+      var _initFor = function(options) {
+
+        var callback = options.callback;
+
+        var modules = $(options.container + ' .module');
+        var requests = [];
+
+        _init_reserved_channels();
+
+        _.each(modules, function(module) {
+          var id = angular.element(module).data('id'),
+            version = angular.element(module).data('version'),
+            tag = angular.element(module).prop('tagName').toLowerCase(),
+            path = _this.path + '/dist/' + tag + '/' + version + '/' + tag + '.min';
+
+          var request = $ocLazyLoad.load({
+            serie: true,
+            files: [
+              // Preload the html template
+              path + '.html',
+              path + '.js',
+              path + '.css'
+            ]
+          }).then(function() {
+            _send_channels_data(id);
+          });
+
+          requests.push(request);
+
+          $rootScope.$on('ocLazyLoad.fileLoaded', function(e, file) {
+            if (file === path + '.js') {
+              $compile(module)($rootScope);
+            }
+          });
+        });
+
+        $q.all(requests).then(callback);
+      };
+
       /*
        * Destroy the modules on the page when a view that has modules
        * instantiated is destroyed
@@ -820,6 +859,7 @@
 
       return {
         init: _init,
+        initFor: _initFor,
         destroy: _destroy,
         append: _append,
         path: this.path
