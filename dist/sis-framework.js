@@ -60,6 +60,8 @@
   angular.module('sis.modules').config(['$sceDelegateProvider', '$compileProvider', '$ocLazyLoadProvider', 'sisModulesProvider', function($sceDelegateProvider,
     $compileProvider, $ocLazyLoadProvider, sisModulesProvider) {
 
+    angular.module('sis.modules').$compileProvider = $compileProvider;
+
     // TODO: Find a better way. Must delay because the sisModulesProvider has to be set
     setTimeout(function() {
       // Allow to load remote directives
