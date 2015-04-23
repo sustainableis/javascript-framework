@@ -16,9 +16,8 @@
    *  - /v1/buildings/1/mapping/areas
    *  - /v1/buildings/1/outputs/mapping/geometry
    */
-  angular.module('sis.api').factory('BuildingsService', function($resource,
-    url, version) {
-    return $resource(url + version + '/buildings/:id/:controller/:verb/:action', {
+  angular.module('sis.api').factory('BuildingsService', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/buildings/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',

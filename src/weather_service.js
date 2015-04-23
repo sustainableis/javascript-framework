@@ -14,9 +14,8 @@
    *  - /v1/weather/locations/1/types
    *  - /v1/weather/locations/1/forecast/hourly
    */
-  angular.module('sis.api').factory('WeatherService', function($resource,
-    url, version) {
-    return $resource(url + version + '/weather/:controller/:id/:verb/:action', {
+  angular.module('sis.api').factory('WeatherService', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/weather/:controller/:id/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',

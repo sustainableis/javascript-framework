@@ -5,9 +5,8 @@
    * Endpoints example:
    *  - /v1/batch
    */
-  angular.module('sis.api').factory('BatchService', function($resource,
-    url, version) {
-    return $resource(url + version + '/batch', {}, {
+  angular.module('sis.api').factory('BatchService', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/batch', {}, {
       'update': {
         method: 'PUT'
       }

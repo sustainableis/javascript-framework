@@ -14,9 +14,8 @@
    *  - /v1/feeds?facility_id=1
    *  - /v1/feeds/types
    */
-  angular.module('sis.api').factory('FeedsService', function($resource,
-    url, version) {
-    return $resource(url + version + '/feeds/:id/:controller/:verb', {
+  angular.module('sis.api').factory('FeedsService', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/feeds/:id/:controller/:verb', {
       id: '@id',
       controller: '@controller',
       verb: '@verb'

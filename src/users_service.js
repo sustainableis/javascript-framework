@@ -12,9 +12,8 @@
    *  - /v1/users/1/access
    *  - /v1/users?facility_id=1
    */
-  angular.module('sis.api').factory('UsersService', function($resource,
-    url, version) {
-    return $resource(url + version + '/users/:id/:controller/:verb', {
+  angular.module('sis.api').factory('UsersService', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/users/:id/:controller/:verb', {
       id: '@id',
       controller: '@controller',
       verb: '@verb'

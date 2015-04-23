@@ -10,9 +10,8 @@
    *  - /v1/layouts
    *  - /v1/layouts/1
    */
-  angular.module('sis.api').factory('LayoutsService', function($resource,
-    url, version) {
-    return $resource(url + version + '/layouts/:id/:controller/:verb', {
+  angular.module('sis.api').factory('LayoutsService', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/layouts/:id/:controller/:verb', {
       id: '@id',
       controller: '@controller',
       verb: '@verb'

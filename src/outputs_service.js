@@ -15,9 +15,8 @@
    *  - /v1/outputs/types
    *  - /v1/outputs/1/fields/Tmp-2/data
    */
-  angular.module('sis.api').factory('OutputsService', function($resource,
-    url, version) {
-    return $resource(url + version + '/outputs/:id/:controller/:verb/:action', {
+  angular.module('sis.api').factory('OutputsService', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/outputs/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',

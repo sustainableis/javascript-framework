@@ -15,9 +15,8 @@
    *  - /v1/rates/schedules/1/periods/current
    *  - /v1/rates/seasons/1/periods/1/rates
    */
-  angular.module('sis.api').factory('RatesService', function($resource,
-    url, version) {
-    return $resource(url + version + '/rates/:controller/:id/:verb/:second_id/:action', {
+  angular.module('sis.api').factory('RatesService', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/rates/:controller/:id/:verb/:second_id/:action', {
       controller: '@controller',
       id: '@id',
       verb: '@verb',

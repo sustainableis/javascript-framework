@@ -12,9 +12,8 @@
    *  - /v1/modules/1
    *  - /v1/modules/1/channels
    */
-  angular.module('sis.api').factory('ModulesService', function($resource,
-    url, version) {
-    return $resource(url + version + '/modules/:id/:controller/:verb/:action', {
+  angular.module('sis.api').factory('ModulesService', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/modules/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',

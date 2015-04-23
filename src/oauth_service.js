@@ -7,8 +7,8 @@
    * Endpoints example:
    *  - /oauth/token
    */
-  angular.module('sis.api').factory('OauthService', function($resource, url) {
-    return $resource(url + 'oauth/:controller', {
+  angular.module('sis.api').factory('OauthService', function($resource, sisApi) {
+    return $resource(sisApi.url + 'oauth/:controller', {
       controller: '@controller'
     });
   });

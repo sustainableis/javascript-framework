@@ -12,9 +12,8 @@
    *  - /v1/configurations/1
    *  - /v1/configurations/1/values
    */
-  angular.module('sis.api').factory('ConfigurationsService', function($resource,
-    url, version) {
-    return $resource(url + version + '/configurations/:id/:controller/:verb/:action', {
+  angular.module('sis.api').factory('ConfigurationsService', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/configurations/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',
