@@ -7,9 +7,11 @@
   angular.module('sis.api', ['sis']);
   angular.module('sis.modules', ['sis']);
 
+  angular.module('sis.api').value('sisToken', {});
+
+  /* Deprecated. Using sisApi.url and sisApi.version instead. */
   angular.module('sis.api').constant('url', 'http://api.sustainableis.com/');
   angular.module('sis.api').constant('version', 'v1');
-  angular.module('sis.api').value('sisToken', {});
 
   /**
    * Interceptor for requests that sets the Authorization header
@@ -106,6 +108,23 @@
 
 (function(angular) {
   /**
+   * Provider for configuring sis.api variables
+   */
+  angular.module('sis.api').provider('sisApi', function() {
+    this.url = 'http://api.sustainableis.com/';
+    this.version = 'v1';
+
+    this.$get = function() {
+      return {
+        url: this.url,
+        version: this.version
+      };
+    };
+  });
+})(window.angular);
+
+(function(angular) {
+  /**
    * Resource for retrieving Areas
    *
    * @param {number|string} id
@@ -119,9 +138,8 @@
    *  - /v1/areas/1/outputs
    *  - /v1/areas/1/outputs?type=temperature
    */
-  angular.module('sis.api').factory('AreasService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/areas/:id/:controller/:verb/:action', {
+  angular.module('sis.api').factory('AreasService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/areas/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',
@@ -141,9 +159,8 @@
    * Endpoints example:
    *  - /v1/batch
    */
-  angular.module('sis.api').factory('BatchService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/batch', {}, {
+  angular.module('sis.api').factory('BatchService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/batch', {}, {
       'update': {
         method: 'PUT'
       }
@@ -169,9 +186,8 @@
    *  - /v1/buildings/1/mapping/areas
    *  - /v1/buildings/1/outputs/mapping/geometry
    */
-  angular.module('sis.api').factory('BuildingsService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/buildings/:id/:controller/:verb/:action', {
+  angular.module('sis.api').factory('BuildingsService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/buildings/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',
@@ -198,9 +214,8 @@
    *  - /v1/configurations/1
    *  - /v1/configurations/1/values
    */
-  angular.module('sis.api').factory('ConfigurationsService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/configurations/:id/:controller/:verb/:action', {
+  angular.module('sis.api').factory('ConfigurationsService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/configurations/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',
@@ -486,9 +501,8 @@
    *  - /v1/facilities/1/outputs/tree/validate
    *  - /v1/facilities/1/wms/products
    */
-  angular.module('sis.api').factory('FacilitiesService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/facilities/:id/:controller/:verb/:action', {
+  angular.module('sis.api').factory('FacilitiesService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/facilities/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',
@@ -517,9 +531,8 @@
    *  - /v1/feeds?facility_id=1
    *  - /v1/feeds/types
    */
-  angular.module('sis.api').factory('FeedsService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/feeds/:id/:controller/:verb', {
+  angular.module('sis.api').factory('FeedsService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/feeds/:id/:controller/:verb', {
       id: '@id',
       controller: '@controller',
       verb: '@verb'
@@ -543,9 +556,8 @@
    *  - /v1/files/1
    *  - /v1/files/1/read
    */
-  angular.module('sis.api').factory('FilesService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/files/:id/:verb', {
+  angular.module('sis.api').factory('FilesService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/files/:id/:verb', {
       id: '@id',
       verb: '@verb'
     }, {
@@ -630,9 +642,8 @@
    *  - /v1/layouts
    *  - /v1/layouts/1
    */
-  angular.module('sis.api').factory('LayoutsService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/layouts/:id/:controller/:verb', {
+  angular.module('sis.api').factory('LayoutsService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/layouts/:id/:controller/:verb', {
       id: '@id',
       controller: '@controller',
       verb: '@verb'
@@ -882,9 +893,8 @@
    *  - /v1/modules/1
    *  - /v1/modules/1/channels
    */
-  angular.module('sis.api').factory('ModulesService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/modules/:id/:controller/:verb/:action', {
+  angular.module('sis.api').factory('ModulesService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/modules/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',
@@ -906,8 +916,8 @@
    * Endpoints example:
    *  - /oauth/token
    */
-  angular.module('sis.api').factory('OauthService', ['$resource', 'url', function($resource, url) {
-    return $resource(url + 'oauth/:controller', {
+  angular.module('sis.api').factory('OauthService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + 'oauth/:controller', {
       controller: '@controller'
     });
   }]);
@@ -927,9 +937,8 @@
    *  - /v1/organizations/1/facilities
    *  - /v1/organizations/1/facilities/tree?start_node_id=1
    */
-  angular.module('sis.api').factory('OrganizationsService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/organizations/:id/:controller/:verb', {
+  angular.module('sis.api').factory('OrganizationsService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/organizations/:id/:controller/:verb', {
       id: '@id',
       controller: '@controller',
       verb: '@verb'
@@ -958,9 +967,8 @@
    *  - /v1/outputs/types
    *  - /v1/outputs/1/fields/Tmp-2/data
    */
-  angular.module('sis.api').factory('OutputsService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/outputs/:id/:controller/:verb/:action', {
+  angular.module('sis.api').factory('OutputsService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/outputs/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',
@@ -990,9 +998,8 @@
    *  - /v1/rates/schedules/1/periods/current
    *  - /v1/rates/seasons/1/periods/1/rates
    */
-  angular.module('sis.api').factory('RatesService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/rates/:controller/:id/:verb/:second_id/:action', {
+  angular.module('sis.api').factory('RatesService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/rates/:controller/:id/:verb/:second_id/:action', {
       controller: '@controller',
       id: '@id',
       verb: '@verb',
@@ -1020,9 +1027,8 @@
    *  - /v1/users/1/access
    *  - /v1/users?facility_id=1
    */
-  angular.module('sis.api').factory('UsersService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/users/:id/:controller/:verb', {
+  angular.module('sis.api').factory('UsersService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/users/:id/:controller/:verb', {
       id: '@id',
       controller: '@controller',
       verb: '@verb'
@@ -1048,9 +1054,8 @@
    *  - /v1/utilities/statements/2/tree
    *  - /v1/utilities/statements/2/tree/63
    */
-  angular.module('sis.api').factory('UtilitiesService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/utilities/:controller/:id/:verb/:verb_id', {
+  angular.module('sis.api').factory('UtilitiesService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/utilities/:controller/:id/:verb/:verb_id', {
       controller: '@controller',
       id: '@id',
       verb: '@verb',
@@ -1148,9 +1153,8 @@
    *  - /v1/views/1/modules
    *  - /v1/views?organization_id=1
    */
-  angular.module('sis.api').factory('ViewsService', ['$resource', 'url', 'version', function($resource, url,
-    version) {
-    return $resource(url + version + '/views/:id/:controller/:verb/:action', {
+  angular.module('sis.api').factory('ViewsService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/views/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',
@@ -1179,9 +1183,8 @@
    *  - /v1/weather/locations/1/types
    *  - /v1/weather/locations/1/forecast/hourly
    */
-  angular.module('sis.api').factory('WeatherService', ['$resource', 'url', 'version', function($resource,
-    url, version) {
-    return $resource(url + version + '/weather/:controller/:id/:verb/:action', {
+  angular.module('sis.api').factory('WeatherService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/weather/:controller/:id/:verb/:action', {
       id: '@id',
       controller: '@controller',
       verb: '@verb',
