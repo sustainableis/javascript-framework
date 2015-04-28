@@ -16,7 +16,7 @@
   /**
    * Interceptor for requests that sets the Authorization header
    */
-  angular.module('sis.api').factory('authInterceptor', function($q, sisToken) {
+  angular.module('sis.api').factory('authInterceptor', function($q, sisToken, sisApi) {
     return {
       request: function(config) {
         config.headers = config.headers || {};
@@ -25,7 +25,8 @@
           config.data = $.param(config.data);
         }
 
-        if (sisToken.access_token) {
+        // Set the Authorization header only to calls to the API
+        if (sisToken.access_token && config.url.indexOf(sisApi.url) > -1) {
           config.headers.Authorization = 'Bearer ' + sisToken.access_token;
         }
 
