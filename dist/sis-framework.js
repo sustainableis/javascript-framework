@@ -1083,8 +1083,7 @@
        */
       var _load = function(options, callback) {
         // TODO: Check if view for facilities, buildings, or organizations
-        dataStore.get('service:facilities/id:' + options.id +
-          '/controller:views/slug:' + options.slug,
+        dataStore.get(options.topic,
           function(views, error) {
             // TODO: Make sure the first view is the right one
             var view = views[0];
