@@ -20,7 +20,7 @@
               data: _data,
               error: error
             });
-          });
+          }, data.cache);
         });
 
         events.subscribe('post', function(data) {

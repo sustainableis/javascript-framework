@@ -4,6 +4,7 @@
      */
     angular.module('sis.modules').provider('dataStore', function() {
       this.cache = {};
+      this.expires = 300;
 
       this.$get = function($injector, $log, OauthService, FacilitiesService,
         OrganizationsService, BuildingsService, FeedsService, OutputsService,
@@ -141,18 +142,28 @@
          *
          * @param {string} topic
          * @param {function} callback
+         * @param {boolean} [cache=true]
          */
-        var _get = function(topic, callback) {
-          if (_.has(_this.cache, topic)) {
-            $log.debug('Returned', _this.cache[topic], 'from cache', 'for topic', topic);
+        var _get = function(topic, callback, cache) {
+          cache = cache === undefined ? true : cache;
 
-            return callback(_this.cache[topic]);
+          if (_.has(_this.cache, topic) && cache === true) {
+            if (moment().diff(_this.cache[topic].added, 'seconds') < _this.expires) {
+              $log.debug('Returned', _this.cache[topic].data, 'from cache', 'for topic', topic);
+
+              return callback(_this.cache[topic].data);
+            } else {
+              $log.debug('Hit missed to cache for topic', topic);
+            }
           }
 
           _call(GET, topic, null, function(data, error) {
             $log.debug('Returned', data, 'from API', 'for topic', topic);
 
-            _this.cache[topic] = data;
+            _this.cache[topic] = {
+              data: data,
+              added: moment()
+            };
 
             callback(data, error);
           });
