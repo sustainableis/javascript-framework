@@ -624,7 +624,7 @@
               container: '#' + placeholder.id,
               slug: module.slug,
               id: module.id,
-              version: '0.0.1',
+              version: module.version,
               transclude: true,
               scope: scope
             });
