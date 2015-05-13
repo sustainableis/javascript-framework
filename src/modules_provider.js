@@ -7,9 +7,17 @@
 
     this.$get = function($injector, $q, $log, $rootScope, $compile, $timeout,
       $ocLazyLoad, dataStore) {
-      var _this = this;
+      var _this = this,
+        reserved_channels_initialized = false;
 
       var _init_reserved_channels = function() {
+        // Do not allow the reserved channels to be initialized twice
+        if (reserved_channels_initialized) {
+          return;
+        }
+
+        reserved_channels_initialized = true;
+
         events.subscribe('get', function(data) {
           $log.debug('Framework got', data, 'on', 'get');
 
