@@ -817,14 +817,18 @@
               path + '.css'
             ]
           }).then(function() {
-            $compile(module)($rootScope);
-
             _send_channels_data(id);
           }, function() {
             $log.error('Module', tag, ':', id, '@', version, 'is missing files');
           });
 
           requests.push(request);
+
+          $rootScope.$on('ocLazyLoad.fileLoaded', function(e, file) {
+            if (file === path + '.js') {
+              $compile(module)($rootScope);
+            }
+          });
         });
 
         $q.all(requests).then(callback);
@@ -880,6 +884,8 @@
           clearing all the events listeners and resetting the modules list might
           cause issues. The destroy event is triggered when a view is destroyed.
          */
+
+        reserved_channels_initialized = false;
 
         // Remove all events listeners
         events.purge();
