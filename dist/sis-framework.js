@@ -1125,7 +1125,7 @@
    * Provider for orchestrating the views inserted on the page
    */
   angular.module('sis.modules').provider('sisViews', function() {
-    this.$get = ['$log', '$compile', '$rootScope', '$ocLazyLoad', 'dataStore', 'sisModules', function($log, $compile, $rootScope, $ocLazyLoad, dataStore,
+    this.$get = ['$log', '$compile', '$ocLazyLoad', 'dataStore', 'sisModules', function($log, $compile, $ocLazyLoad, dataStore,
       sisModules) {
       var _this = this;
 
@@ -1133,7 +1133,6 @@
        * Search for the view
        */
       var _load = function(options, callback) {
-        // TODO: Check if view for facilities, buildings, or organizations
         dataStore.get(options.topic,
           function(views, error) {
             // TODO: Make sure the first view is the right one
@@ -1144,7 +1143,7 @@
                 var path = sisModules.path + '/dist/' + layout.slug + '/' +
                   layout.version + '/' + layout.slug + '.min';
 
-                $rootScope.tpl = path + '.html';
+                options.scope.tpl = path + '.html';
 
                 $ocLazyLoad.load({
                   files: [
@@ -1152,7 +1151,7 @@
                   ]
                 });
 
-                $rootScope.$on('$includeContentLoaded', function() {
+                options.scope.$on('$includeContentLoaded', function() {
                   dataStore.get('service:views/id:' + view.id + '/controller:modules',
                     function(modules, error) {
                       var placeholders = $('.placeholder');
@@ -1166,7 +1165,7 @@
                           var module_markup = '<' + module.slug + ' class="module" data-id="' +
                             module.id + '" data-version="' + module.version + '">';
 
-                          module_element = $compile(module_markup)($rootScope);
+                          module_element = $compile(module_markup)(options.scope);
 
                           angular.element(placeholder).empty();
                           angular.element(placeholder).append(module_element);
