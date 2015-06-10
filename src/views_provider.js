@@ -12,7 +12,7 @@
        * script files
        */
       var _init = function(callback) {
-        var views = angular.element('.view'),
+        var views = angular.element('.__view__'),
           requests = [];
 
         _.each(views, function(view) {
