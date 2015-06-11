@@ -99,9 +99,15 @@
        * Builds an internal list with modules embedded on the page and loads
        * script files
        */
-      var _init = function(callback) {
-        var modules = angular.element('.module'),
+      var _init = function(callback, options) {
+        var modules = [],
           requests = [];
+
+        if (_.has(options, 'container')) {
+          modules = angular.element(options.container + ' .module');
+        } else {
+          modules = angular.element('.module');
+        }
 
         _init_reserved_channels();
 
@@ -137,45 +143,6 @@
         $q.all(requests).then(callback);
       };
 
-      var _initFor = function(options) {
-
-        var callback = options.callback;
-
-        var modules = $(options.container + ' .module');
-        var requests = [];
-
-        _init_reserved_channels();
-
-        _.each(modules, function(module) {
-          var id = angular.element(module).data('id'),
-            version = angular.element(module).data('version'),
-            tag = angular.element(module).prop('tagName').toLowerCase(),
-            path = _this.path + '/dist/' + tag + '/' + version + '/' + tag + '.min';
-
-          var request = $ocLazyLoad.load({
-            serie: true,
-            files: [
-              // Preload the html template
-              path + '.html',
-              path + '.js',
-              path + '.css'
-            ]
-          }).then(function() {
-            _send_channels_data(id);
-          });
-
-          requests.push(request);
-
-          $rootScope.$on('ocLazyLoad.fileLoaded', function(e, file) {
-            if (file === path + '.js') {
-              $compile(module)($rootScope);
-            }
-          });
-        });
-
-        $q.all(requests).then(callback);
-      };
-
       /*
        * Destroy the modules on the page when a view that has modules
        * instantiated is destroyed
@@ -194,40 +161,9 @@
         events.purge();
       };
 
-      var _append = function(options) {
-        var append_deferred = $q.defer();
-
-        var container_selector = options.container;
-        var module_id = options.id;
-        var module_slug = options.slug;
-        var module_version = options.version;
-        var transclude = options.transclude;
-        var scope = options.scope;
-
-        var container_elem = $($(container_selector)[0]);
-
-        var module_elem = $compile(
-          '<' +
-          module_slug +
-          ' data-id="' +
-          module_id +
-          '" data-version="' +
-          module_version +
-          '" class="module">',
-
-          transclude)(scope);
-
-        container_elem.append(module_elem);
-        append_deferred.resolve();
-
-        return append_deferred.promise;
-      };
-
       return {
         init: _init,
-        initFor: _initFor,
         destroy: _destroy,
-        append: _append,
         path: this.path
       };
     };
