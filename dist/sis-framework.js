@@ -798,10 +798,12 @@
        */
       var _init = function(callback, options) {
         var modules = [],
-          requests = [];
+          requests = [],
+          _options = options || {},
+          scope = _options.scope || $rootScope;
 
-        if (_.has(options, 'container')) {
-          modules = angular.element(options.container + ' .module');
+        if (_.has(_options, 'container')) {
+          modules = angular.element(_options.container + ' .module');
         } else {
           modules = angular.element('.module');
         }
@@ -832,7 +834,7 @@
 
           $rootScope.$on('ocLazyLoad.fileLoaded', function(e, file) {
             if (file === path + '.js') {
-              $compile(module)($rootScope);
+              $compile(module)(scope);
             }
           });
         });
@@ -845,17 +847,7 @@
        * instantiated is destroyed
        */
       var _destroy = function() {
-        /*
-          TODO: Review this process
-          For pages with multiple views and each view has modules instantiated,
-          clearing all the events listeners and resetting the modules list might
-          cause issues. The destroy event is triggered when a view is destroyed.
-         */
-
         reserved_channels_initialized = false;
-
-        // Remove all events listeners
-        events.purge();
       };
 
       return {
@@ -1069,9 +1061,11 @@
        * Builds an internal list with modules embedded on the page and loads
        * script files
        */
-      var _init = function(callback) {
+      var _init = function(callback, options) {
         var views = angular.element('.__view__'),
-          requests = [];
+          requests = [],
+          _options = options || {},
+          scope = _options.scope || $rootScope;
 
         _.each(views, function(view) {
           var id = angular.element(view).data('id'),
@@ -1102,7 +1096,7 @@
                     var module_markup = '<' + module.slug + ' class="module" data-id="' +
                       module.id + '" data-version="' + module.version + '">';
 
-                    module_element = $compile(module_markup)($rootScope);
+                    module_element = $compile(module_markup)(scope);
 
                     angular.element(placeholder).empty();
                     angular.element(placeholder).append(module_element);
@@ -1118,7 +1112,7 @@
 
           $rootScope.$on('ocLazyLoad.fileLoaded', function(e, file) {
             if (file === path + '.js') {
-              $compile(view)($rootScope);
+              $compile(view)(scope);
             }
           });
 
