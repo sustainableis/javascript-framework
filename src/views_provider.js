@@ -11,9 +11,11 @@
        * Builds an internal list with modules embedded on the page and loads
        * script files
        */
-      var _init = function(callback) {
+      var _init = function(callback, options) {
         var views = angular.element('.__view__'),
-          requests = [];
+          requests = [],
+          _options = options || {},
+          scope = _options.scope || $rootScope;
 
         _.each(views, function(view) {
           var id = angular.element(view).data('id'),
@@ -44,7 +46,7 @@
                     var module_markup = '<' + module.slug + ' class="module" data-id="' +
                       module.id + '" data-version="' + module.version + '">';
 
-                    module_element = $compile(module_markup)($rootScope);
+                    module_element = $compile(module_markup)(scope);
 
                     angular.element(placeholder).empty();
                     angular.element(placeholder).append(module_element);
@@ -60,7 +62,7 @@
 
           $rootScope.$on('ocLazyLoad.fileLoaded', function(e, file) {
             if (file === path + '.js') {
-              $compile(view)($rootScope);
+              $compile(view)(scope);
             }
           });
 
