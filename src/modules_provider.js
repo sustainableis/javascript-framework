@@ -150,7 +150,7 @@
        * instantiated is destroyed
        */
       var _destroy = function() {
-        reserved_channels_initialized = false;
+        //reserved_channels_initialized = false;
       };
 
       return {
