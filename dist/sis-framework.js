@@ -376,7 +376,8 @@
          * @param {boolean} [cache=true]
          */
         var _get = function(topic, callback, cache) {
-          cache = cache === undefined ? true : cache;
+          //cache = cache === undefined ? true : cache;
+          cache = false; // disabling cache for now
 
           if (_.has(_this.cache, topic) && cache === true) {
             if (moment().diff(_this.cache[topic].added, 'seconds') < _this.expires) {
@@ -847,7 +848,7 @@
        * instantiated is destroyed
        */
       var _destroy = function() {
-        reserved_channels_initialized = false;
+        //reserved_channels_initialized = false;
       };
 
       return {
