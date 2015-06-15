@@ -101,10 +101,12 @@
        */
       var _init = function(callback, options) {
         var modules = [],
-          requests = [];
+          requests = [],
+          _options = options || {},
+          scope = _options.scope || $rootScope;
 
-        if (_.has(options, 'container')) {
-          modules = angular.element(options.container + ' .module');
+        if (_.has(_options, 'container')) {
+          modules = angular.element(_options.container + ' .module');
         } else {
           modules = angular.element('.module');
         }
@@ -135,7 +137,7 @@
 
           $rootScope.$on('ocLazyLoad.fileLoaded', function(e, file) {
             if (file === path + '.js') {
-              $compile(module)($rootScope);
+              $compile(module)(scope);
             }
           });
         });
@@ -148,17 +150,7 @@
        * instantiated is destroyed
        */
       var _destroy = function() {
-        /*
-          TODO: Review this process
-          For pages with multiple views and each view has modules instantiated,
-          clearing all the events listeners and resetting the modules list might
-          cause issues. The destroy event is triggered when a view is destroyed.
-         */
-
         reserved_channels_initialized = false;
-
-        // Remove all events listeners
-        events.purge();
       };
 
       return {
