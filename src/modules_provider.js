@@ -103,7 +103,7 @@
         var modules = [],
           requests = [],
           _options = options || {},
-          scope = _options.scope || $rootScope;
+          scope = _options.scope || $rootScope.$new(true);
 
         if (_.has(_options, 'container')) {
           modules = angular.element(_options.container + ' .module');

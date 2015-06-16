@@ -15,7 +15,7 @@
         var views = angular.element('.__view__'),
           requests = [],
           _options = options || {},
-          scope = _options.scope || $rootScope;
+          scope = _options.scope || $rootScope.$new(true);
 
         _.each(views, function(view) {
           var id = angular.element(view).data('id'),
