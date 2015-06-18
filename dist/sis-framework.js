@@ -9,10 +9,6 @@
 
   angular.module('sis.api').value('sisToken', {});
 
-  /* Deprecated. Using sisApi.url and sisApi.version instead. */
-  angular.module('sis.api').constant('url', 'http://api.sustainableis.com/');
-  angular.module('sis.api').constant('version', 'v1');
-
   /**
    * Interceptor for requests that sets the Authorization header
    */
