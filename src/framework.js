@@ -57,7 +57,10 @@
    * Configuration for the sis.modules module
    */
   angular.module('sis.modules').config(function($sceDelegateProvider,
-    $compileProvider, $ocLazyLoadProvider, sisModulesProvider) {
+    $compileProvider, $filterProvider, $ocLazyLoadProvider,
+    $logProvider, sisModulesProvider) {
+
+    $logProvider.debugEnabled(false);
 
     // TODO: Find a better way. Must delay because the sisModulesProvider has to be set
     setTimeout(function() {
@@ -69,9 +72,18 @@
     });
 
     $ocLazyLoadProvider.config({
-      debug: true,
+      debug: false,
       events: true
     });
+
+    /**
+     * Wrapper over AngularJS filters
+     * - Allows for a filter to be used by a directive
+     * that is created on $compileProvider
+     */
+    angular.module('sis.modules')._filter = function(name, funct) {
+      $filterProvider.register(name, funct);
+    };
 
     /**
      * Wrapper over AngularJS directive
