@@ -741,10 +741,10 @@
           var request = $ocLazyLoad.load({
             serie: true,
             files: [
-              // Preload the html template
+              // Preload in this order: css -> html -> js
+              path + '.css',
               path + '.html',
-              path + '.js',
-              path + '.css'
+              path + '.js'
             ]
           }).then(function() {
             _send_channels_data(id);
@@ -999,10 +999,10 @@
           $ocLazyLoad.load({
             serie: true,
             files: [
-              // Preload the html template
+              // Preload in this order: css -> html -> js
+              path + '.css',
               path + '.html',
-              path + '.js',
-              path + '.css'
+              path + '.js'
             ]
           }).then(function() {
             dataStore.get('service:views/id:' + id + '/controller:modules',
