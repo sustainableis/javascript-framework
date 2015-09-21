@@ -617,6 +617,26 @@
   }]);
 })(window.angular);
 
+(function(angular) {
+  /**
+   * Resource for retrieving Groups
+   *
+   * @param {number|string} id
+   * @param {string} controller
+   * @param {string} verb
+   *
+   * Endpoints example:
+   *  - /v1/groups
+   */
+  angular.module('sis.api').factory('GroupsService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/groups/:id/:controller/:verb', {
+      id: '@id',
+      controller: '@controller',
+      verb: '@verb'
+    });
+  }]);
+})(window.angular);
+
 (function(angular, events, _, $) {
   /**
    * Provider for orchestrating the modules inserted on the page
