@@ -17,7 +17,9 @@
       request: function(config) {
         config.headers = config.headers || {};
 
-        if (config.data && typeof config.data === 'object') {
+        // Create a serialized representation of the data (URL encoded)
+        // Arrays are not serialized properly so send the raw data
+        if (_.has(config, 'data') && _.isObject(config.data) && !_.isArray(config.data)) {
           config.data = $.param(config.data);
         }
 
