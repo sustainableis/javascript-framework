@@ -239,6 +239,25 @@
   }]);
 })(window.angular);
 
+(function(angular) {
+  /**
+   * Resource for retrieving Customers
+   *
+   * @param {number|string} id
+   * @param {string} controller
+   * @param {string} verb
+   *
+   * Endpoints example:
+   *  - /v1/customers
+   *  - /v1/customers/1
+   */
+  angular.module('sis.api').factory('CustomersService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/customers/:id/:controller', {
+      id: '@id',
+      controller: '@controller'
+    }, {});
+  }]);
+})(window.angular);
   (function(angular, _) {
     /**
      * Provider for managing API calls
@@ -639,6 +658,167 @@
   }]);
 })(window.angular);
 
+(function(angular) {
+  /**
+   * Resource for retrieving Inbounds
+   *
+   * @param {number|string} id
+   * @param {string} controller
+   * @param {string} verb
+   *
+   * Endpoints example:
+   *  - /v1/inbounds
+   *  - /v1/inbounds/1
+   *  - /v1/inbounds/1/detail
+   */
+  angular.module('sis.api').factory('InboundService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/inbounds/:id/:controller', {
+      id: '@id',
+      controller: '@controller'
+    }, {});
+  }]);
+})(window.angular);
+(function(angular) {
+  /**
+   * Resource for retrieving Inventory
+   *
+   * @param {number|string} id
+   * @param {string} controller
+   * @param {string} verb
+   *
+   * Endpoints example:
+   *  - /v1/inventory
+   *  - /v1/locations/1
+   */
+  angular.module('sis.api').factory('InventoryService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/inventory', {}, {});
+  }]);
+})(window.angular);
+(function(angular, _, $) {
+  /**
+   * Factory for handling layout modules
+   */
+  angular.module('sis.modules').provider('sisLayouts', function() {
+
+    this.$get = ['$q', '$log', '$timeout', 'sisModules', 'LayoutsService', function($q, $log, $timeout, sisModules, LayoutsService) {
+      var _layout_modules = [];
+
+      /**
+       * Fetches layout modules
+       */
+      var _fetch_modules = function(layout_id) {
+
+        var fetch_modules_deferred = $q.defer();
+        var layout_modules_resource = LayoutsService.query({
+          id: layout_id,
+          controller: 'modules'
+        });
+
+        layout_modules_resource.$promise
+          .then(function(modules) {
+            _layout_modules = _.clone(modules);
+            fetch_modules_deferred.resolve();
+          });
+
+        return fetch_modules_deferred.promise;
+      };
+
+      var _append_modules = function(scope) {
+        var append_deferred = $q.defer();
+        var placeholders = $('.placeholder');
+
+        _.each(placeholders, function(placeholder) {
+          console.log('PLACEHOLDER', placeholder);
+          var module = _.find(_layout_modules, {
+            placeholder: placeholder.id
+          });
+          console.log('MODULE', module);
+          sisModules
+            .append({
+              container: '#' + placeholder.id,
+              slug: module.slug,
+              id: module.id,
+              version: module.version,
+              transclude: true,
+              scope: scope
+            });
+        });
+
+        append_deferred.resolve();
+        return append_deferred.promise;
+      };
+
+      return {
+        fetch_modules: _fetch_modules,
+        append_modules: _append_modules
+      };
+    }];
+  });
+})(window.angular, window._, window.$);
+
+(function(angular) {
+  /**
+   * Resource for retrieving Layouts
+   *
+   * @param {number|string} id
+   * @param {string} controller
+   * @param {string} verb
+   *
+   * Endpoints example:
+   *  - /v1/layouts
+   *  - /v1/layouts/1
+   */
+  angular.module('sis.api').factory('LayoutsService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/layouts/:id/:controller/:verb', {
+      id: '@id',
+      controller: '@controller',
+      verb: '@verb'
+    }, {
+      'update': {
+        method: 'PUT'
+      }
+    });
+  }]);
+})(window.angular);
+
+(function(angular) {
+  /**
+   * Resource for retrieving Locations
+   *
+   * @param {number|string} id
+   * @param {string} controller
+   * @param {string} verb
+   *
+   * Endpoints example:
+   *  - /v1/locations
+   *  - /v1/locations/1
+   */
+  angular.module('sis.api').factory('LocationsService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/locations/:id/:controller', {
+      id: '@id',
+      controller: '@controller'
+    }, {});
+  }]);
+})(window.angular);
+(function(angular) {
+  /**
+   * Resource for retrieving Lots
+   *
+   * @param {number|string} id
+   * @param {string} controller
+   * @param {string} verb
+   *
+   * Endpoints example:
+   *  - /v1/locations
+   *  - /v1/locations/1
+   */
+  angular.module('sis.api').factory('LotsService', ['$resource', 'sisApi', function($resource, sisApi) {
+    return $resource(sisApi.url + sisApi.version + '/lots/:id/:controller', {
+      id: '@id',
+      controller: '@controller'
+    }, {});
+  }]);
+})(window.angular);
 (function(angular, events, _, $) {
   /**
    * Provider for orchestrating the modules inserted on the page
