@@ -489,6 +489,10 @@
     }, {
       'update': {
         method: 'PUT'
+      },
+      'trigger': {
+        method: 'POST',
+        isArray: true
       }
     });
   }]);
