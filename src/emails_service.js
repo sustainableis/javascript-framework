@@ -13,7 +13,7 @@
    *  - /v1/emails/subscriptions/:subscription_id/subscribers/:user_id
    *  - /v1/emails/subscriptions/:subscription_id/trigger
    */
-  angular.module('sis.api').factory('ViewsService', function($resource, sisApi) {
+  angular.module('sis.api').factory('EmailsService', function($resource, sisApi) {
     return $resource(sisApi.url + sisApi.version + '/emails/:id/:controller/:verb/:action', {
       id: '@id',
       controller: '@controller',
