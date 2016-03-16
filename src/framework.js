@@ -23,8 +23,7 @@
           config.data = $.param(config.data);
         }
 
-        // Set the Authorization header only to calls to the API
-        if (sisToken.access_token && config.url.indexOf(sisApi.url) > -1) {
+        if (sisToken.access_token) {
           config.headers.Authorization = 'Bearer ' + sisToken.access_token;
         }
 
