@@ -23,7 +23,7 @@
           config.data = $.param(config.data);
         }
 
-        if (sisToken.access_token) {
+        if (sisToken.access_token && config.url.indexOf(sisApi.baseUrl) > -1) {
           config.headers.Authorization = 'Bearer ' + sisToken.access_token;
         }
 

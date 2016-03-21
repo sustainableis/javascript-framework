@@ -23,7 +23,7 @@
           config.data = $.param(config.data);
         }
 
-        if (sisToken.access_token) {
+        if (sisToken.access_token && config.url.indexOf(sisApi.baseUrl) > -1) {
           config.headers.Authorization = 'Bearer ' + sisToken.access_token;
         }
 
@@ -154,12 +154,17 @@
     this.url = 'http://api.sustainableis.com/';
     this.version = 'v1';
     this.services = {};
+    this.baseUrl = 'api.sustainableis.com';
 
     this.$get = function() {
+      var parser = document.createElement('a');
+      parser.href = this.url;
+      
       return {
         url: this.url,
         version: this.version,
-        services: this.services
+        services: this.services,
+        baseUrl: parser.hostname
       };
     };
   });
