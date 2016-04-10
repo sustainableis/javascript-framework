@@ -15,6 +15,7 @@
   angular.module('sis.api').factory('authInterceptor', ['$q', 'sisToken', 'sisApi', function($q, sisToken, sisApi) {
     return {
       request: function(config) {
+        var require_auth = false;
         config.headers = config.headers || {};
 
         // Create a serialized representation of the data (URL encoded)
@@ -23,7 +24,19 @@
           config.data = $.param(config.data);
         }
 
-        if (sisToken.access_token && config.url.indexOf(sisApi.baseUrl) > -1) {
+        // Requests that are not made to the API or services do not require auth
+        // Add token only to urls defined in sisApi.services and sisApi.url
+        _.each(sisApi.services, function(service) {
+          if (config.url.indexOf(service.url) > -1) {
+            require_auth = true;
+          }
+        });
+
+        if (config.url.indexOf(sisApi.url) > -1) {
+          require_auth = true;
+        }
+
+        if (sisToken.access_token && require_auth) {
           config.headers.Authorization = 'Bearer ' + sisToken.access_token;
         }
 
@@ -154,17 +167,12 @@
     this.url = 'http://api.sustainableis.com/';
     this.version = 'v1';
     this.services = {};
-    this.baseUrl = 'api.sustainableis.com';
 
     this.$get = function() {
-      var parser = document.createElement('a');
-      parser.href = this.url;
-      
       return {
         url: this.url,
         version: this.version,
-        services: this.services,
-        baseUrl: parser.hostname
+        services: this.services
       };
     };
   });
